@@ -14,11 +14,8 @@ interface Props {
 export default function Provider({ children, user }: Props) {
   return (
     <ReactProvider>
-      <WebSocketProvider user={user}>
-        <SessionProvider user={user}>{children}</SessionProvider>
-      </WebSocketProvider>
+      <SessionProvider user={user}>{children}</SessionProvider>
       <Toaster richColors position="top-center" />
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
     </ReactProvider>
   );
 }

@@ -1,10 +1,10 @@
-import { FormLogout } from "@/components/form/logout/form-logout";
+import { SidebarTrigger } from "@/components/sidebar/sidebar-trigger";
 import React from "react";
 
 const Page = () => {
   return (
-    <div>
-      <FormLogout />
+    <div className="flex flex-col">
+      <SidebarTrigger />
     </div>
   );
 };

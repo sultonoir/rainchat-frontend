@@ -4,5 +4,9 @@ import { logout } from "@/server/routes/auth/logout";
 import React from "react";
 
 export const FormLogout = () => {
-  return <Button onClick={logout} >Signout</Button>;
+  return (
+    <Button variant="glow" onClick={logout}>
+      Signout
+    </Button>
+  );
 };

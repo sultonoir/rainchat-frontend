@@ -18,6 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        glow: "text-primary bg-primary/10",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -30,7 +31,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 export interface ButtonProps
@@ -53,7 +54,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       endContent,
       ...props
     },
-    ref
+    ref,
   ) => {
     const contentStart = loading ? (
       <Loader2 className="size-4 animate-spin" />
@@ -64,12 +65,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        {...props}>
+        {...props}
+      >
         {contentStart && (
           <span
             className={cn("mr-2", {
               "mr-0": !children,
-            })}>
+            })}
+          >
             {contentStart}
           </span>
         )}
@@ -77,7 +80,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {!loading && endContent && <span className="ml-2">{endContent}</span>}
       </button>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
