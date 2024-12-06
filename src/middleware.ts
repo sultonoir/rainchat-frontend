@@ -4,16 +4,16 @@ import { getSession } from "./server/session";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  // const path = request.nextUrl.pathname;
-  // const user = await getSession();
+  const path = request.nextUrl.pathname;
+  const user = await getSession();
 
-  // if (!user) {
-  //   return NextResponse.redirect(new URL("/signin", request.url));
-  // }
+  if (!user) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
 
-  // if (path === "/signin" && user) {
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
+  if (path === "/signin" && user) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
   return NextResponse.next();
 }

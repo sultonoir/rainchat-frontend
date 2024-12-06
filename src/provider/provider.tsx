@@ -4,7 +4,6 @@ import { Session } from "@/types";
 import { SessionProvider } from "./session-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { WebSocketProvider } from "./socket-provider";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 interface Props {
   children: React.ReactNode;
@@ -14,8 +13,10 @@ interface Props {
 export default function Provider({ children, user }: Props) {
   return (
     <ReactProvider>
-      <SessionProvider user={user}>{children}</SessionProvider>
-      <Toaster richColors position="top-center" />
+      <SessionProvider user={user}>
+        <WebSocketProvider user={user}>{children}</WebSocketProvider>
+      </SessionProvider>
+      <Toaster richColors position="bottom-left" />
     </ReactProvider>
   );
 }
