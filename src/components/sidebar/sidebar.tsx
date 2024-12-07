@@ -3,6 +3,7 @@ import { FormLogout } from "../form/logout/form-logout";
 import { UserDropdown } from "../user/user-dropdown";
 import { FormCreatGroup } from "../form/group/form-create-group";
 import { ChatList } from "../chat/chat-list";
+import { SidebarTrigger } from "./sidebar-trigger";
 
 export function Sidebar() {
   return (
@@ -13,6 +14,7 @@ export function Sidebar() {
           <h2 className="text-xl font-bold text-white">Rainchat</h2>
         </div>
         <FormCreatGroup />
+        <SidebarTrigger />
       </div>
       <ChatList />
       <div className="flex flex-none items-center justify-between p-4 pt-0">

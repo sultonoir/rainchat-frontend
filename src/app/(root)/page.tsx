@@ -1,12 +1,12 @@
-import { SidebarTrigger } from "@/components/sidebar/sidebar-trigger";
+import { Metadata } from "next";
 import React from "react";
 
+export const metadata: Metadata = {
+  title: "Home",
+};
+
 const Page = () => {
-  return (
-    <div className="flex flex-col">
-      <SidebarTrigger />
-    </div>
-  );
+  return <div>hallo</div>;
 };
 
 export default Page;

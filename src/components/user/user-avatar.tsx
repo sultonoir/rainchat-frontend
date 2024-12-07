@@ -9,10 +9,15 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
   online?: boolean;
 }
 
-export const UserAvatar = ({ src, name, online, className }: Props) => {
+export const UserAvatar = ({
+  src = "/avatar.png",
+  name,
+  online,
+  className,
+}: Props) => {
   return (
-    <div className={cn("relative flex-none flex-shrink-0", className)}>
-      <Avatar>
+    <div className={cn("relative flex-none flex-shrink-0")}>
+      <Avatar className={className}>
         <AvatarImage src={src === "" ? "/avatar.png" : src} />
         <AvatarFallback>{name?.at(0) ?? "R"}</AvatarFallback>
       </Avatar>

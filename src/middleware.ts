@@ -20,5 +20,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/", "/user/:path*", "/group/:path*", "/dm/:path*"],
+  matcher: ["/", "/chat/:path*", "/group/:path*"],
 };

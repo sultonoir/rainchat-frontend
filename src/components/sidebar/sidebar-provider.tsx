@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "../../hooks/use-sidebar";
 import { Sidebar } from "@/components/sidebar/sidebar";
-import { MainContent } from "@/components/ui/main-content";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +10,7 @@ interface LayoutProps {
 
 const sidebarVariants = {
   open: {
+    display: "flex",
     width: "350px", // Lebih kecil agar lebih cepat
     opacity: 1,
     transition: {
@@ -20,6 +20,7 @@ const sidebarVariants = {
     },
   },
   closed: {
+    display: "none",
     width: "0px",
     opacity: 0,
     transition: {
@@ -56,7 +57,7 @@ export function SidebarProvider({ children }: LayoutProps) {
     <div className="flex min-h-screen overflow-hidden">
       <AnimatePresence>
         <motion.div
-          initial="closed"
+          initial="open"
           animate={isOpen ? "open" : "closed"}
           exit="closed" // Tambahkan animasi keluar
           variants={sidebarVariants}
@@ -67,12 +68,12 @@ export function SidebarProvider({ children }: LayoutProps) {
       </AnimatePresence>
 
       <motion.div
-        initial="closed"
+        initial="open"
         animate={isOpen ? "open" : "closed"}
         variants={contentVariants}
         className="flex-1 transition-transform will-change-transform" // Optimisasi dengan will-change
       >
-        <MainContent>{children}</MainContent>
+        {children}
       </motion.div>
     </div>
   );

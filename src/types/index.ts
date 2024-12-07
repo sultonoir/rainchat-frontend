@@ -25,3 +25,27 @@ export type Chatlist = {
   isGroup: boolean;
   userId?: string;
 };
+
+export type Member = {
+  user: {
+    image: string;
+    username: string;
+    status: string | null;
+    lastSeen: Date;
+    baner: string | null;
+  };
+  userId: string;
+  name: string | null;
+  id: string;
+};
+
+export type ChatWithMember = {
+  members: Member[];
+  name: string;
+  image: string;
+  desc: string;
+  id: string;
+  isGroup: boolean;
+  lastOnline: Date | undefined;
+  userId?:string;
+};

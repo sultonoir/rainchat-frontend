@@ -6,7 +6,7 @@ interface ShowStore {
 }
 
 const useShow = create<ShowStore>((set) => ({
-  show: true,
+  show: false,
   setShow: () => set((state) => ({ show: !state.show })),
 }));
 
