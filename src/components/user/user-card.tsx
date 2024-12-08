@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { getGlobalError } from "@/lib/getGlobalError";
 import { useWebSocket } from "@/provider/socket-provider";
 import { cn } from "@/lib/utils";
+import { FormEditUser } from "../form/user/form-edit-user";
 
 interface UserCardProps extends React.HtmlHTMLAttributes<HTMLElement> {
   userId: string;
@@ -59,6 +60,7 @@ export default function UserCard({ userId, className }: UserCardProps) {
                   {data?.username}
                 </p>
               </div>
+              {isMe && <FormEditUser />}
             </div>
           </div>
         </div>

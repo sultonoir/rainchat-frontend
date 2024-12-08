@@ -15,10 +15,9 @@ interface Props {
 export const ChatLayout = ({ chat }: Props) => {
   const { socket } = useWebSocket();
   const ctx = useQueryClient();
-  React.useEffect(() => {
-    socket?.emit("join group", chat.id);
-    socket?.on("sendMessage", (data: Messages) => {
-      console.log(data);
+
+  const upadeMessage = React.useCallback(
+    (data: Messages) => {
       ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
         if (!oldData) {
           return [];
@@ -50,15 +49,32 @@ export const ChatLayout = ({ chat }: Props) => {
 
           return {
             ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              messages: [...page.messages, data],
-            })),
+            pages: oldData.pages.flatMap((page, index) => {
+              // Modify only the first page or append to a specific one
+              if (index === oldData.pages.length - 1) {
+                return {
+                  ...page,
+                  messages: [...page.messages, data],
+                };
+              }
+              return page;
+            }),
           };
         },
       );
-    });
-  }, [chat.id, socket, ctx]);
+    },
+    [chat.id, ctx],
+  );
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.emit("join group", chat.id);
+      socket.on("sendMessage", (data: Messages) => {
+        console.log(data);
+        upadeMessage(data);
+      });
+    }
+  }, [chat.id, socket, upadeMessage]);
 
   return (
     <div className="flex h-dvh flex-col">
