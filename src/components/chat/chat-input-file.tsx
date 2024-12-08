@@ -23,8 +23,16 @@ import { useIsMobile } from "@/hooks/use-is-mobile";
 import Image from "next/image";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useWebSocket } from "@/provider/socket-provider";
+import { useUploadThing } from "@/lib/uploadthing";
+import { useSession } from "@/provider/session-provider";
 
-export const ChatInputFile = () => {
+interface Props {
+  id: string;
+  close: () => void;
+}
+
+export const ChatInputFile = ({ id, close }: Props) => {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const { images, setImages } = useImages();
@@ -84,9 +92,19 @@ export const ChatInputFile = () => {
         />
       </Label>
       {isMobile ? (
-        <DrawerInput open={open} onOpenChange={handleClose} />
+        <DrawerInput
+          open={open}
+          onOpenChange={handleClose}
+          id={id}
+          close={close}
+        />
       ) : (
-        <DialogInput open={open} onOpenChange={handleClose} />
+        <DialogInput
+          open={open}
+          onOpenChange={handleClose}
+          id={id}
+          close={close}
+        />
       )}
     </div>
   );
@@ -95,9 +113,11 @@ export const ChatInputFile = () => {
 interface DialogProps {
   open: boolean;
   onOpenChange: (value: boolean) => void;
+  id: string;
+  close: () => void;
 }
 
-function DialogInput({ onOpenChange, open }: DialogProps) {
+function DialogInput({ onOpenChange, open, id, close }: DialogProps) {
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent>
@@ -105,13 +125,18 @@ function DialogInput({ onOpenChange, open }: DialogProps) {
           <DialogTitle>Send Message</DialogTitle>
           <DialogDescription className="sr-only">create chat</DialogDescription>
         </DialogHeader>
-        <FormSendMessage open={open} onOpenChange={onOpenChange} />
+        <FormSendMessage
+          open={open}
+          onOpenChange={onOpenChange}
+          id={id}
+          close={close}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function DrawerInput({ onOpenChange, open }: DialogProps) {
+function DrawerInput({ onOpenChange, open, id, close }: DialogProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -120,7 +145,12 @@ function DrawerInput({ onOpenChange, open }: DialogProps) {
           <DrawerDescription className="sr-only">Chat Input</DrawerDescription>
         </DrawerHeader>
         <div className="p-4 pb-0">
-          <FormSendMessage open={open} onOpenChange={onOpenChange} />
+          <FormSendMessage
+            open={open}
+            onOpenChange={onOpenChange}
+            id={id}
+            close={close}
+          />
         </div>
         <DrawerFooter>
           <Button variant="outline" className="w-full">
@@ -132,7 +162,11 @@ function DrawerInput({ onOpenChange, open }: DialogProps) {
   );
 }
 
-function FormSendMessage({ onOpenChange }: DialogProps) {
+function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
+  const [isPending, setIsPending] = useState(false);
+  const { user } = useSession();
+  const { startUpload } = useUploadThing("media");
+  const { socket } = useWebSocket();
   const [content, setContent] = useState("");
   const { images, setImages } = useImages();
 
@@ -169,7 +203,23 @@ function FormSendMessage({ onOpenChange }: DialogProps) {
     setImages(images.filter((i) => i.name !== name));
   };
 
-  const handleSumbit = () => {
+  const handleSumbit = async () => {
+    let imageUploaded: string[] = [];
+    setIsPending(true);
+    try {
+      const result = await startUpload(images);
+      imageUploaded = result?.map((item) => item.url) ?? [];
+    } catch (error) {
+      console.log(error);
+    }
+    socket?.emit("sendMessage", {
+      senderId: user?.id,
+      media: imageUploaded,
+      chatId: id,
+      content: content.trim(),
+    });
+    setIsPending(false);
+    close();
     setContent("");
     onOpenChange(false);
   };
@@ -208,7 +258,9 @@ function FormSendMessage({ onOpenChange }: DialogProps) {
       </ul>
       <div className="flex w-full gap-2">
         <Input value={content} onChange={(e) => setContent(e.target.value)} />
-        <Button onClick={handleSumbit}>Sumbit</Button>
+        <Button disabled={isPending} loading={isPending} onClick={handleSumbit}>
+          Sumbit
+        </Button>
       </div>
     </div>
   );

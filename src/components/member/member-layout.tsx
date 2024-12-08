@@ -5,7 +5,6 @@ import useShow from "@/hooks/use-show";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import { MemberCard } from "./member-card";
-import { ChatListLoader } from "../chat/chat-list-loader";
 import { Member } from "@/types";
 
 interface Props {
@@ -59,7 +58,6 @@ export const MemberLayout = ({ members }: Props) => {
             {members?.map((m) => (
               <MemberCard key={m.id} isMobile={isMobile} member={m} />
             ))}
-            <ChatListLoader count={40} />
           </div>
         </div>
       </motion.div>

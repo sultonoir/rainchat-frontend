@@ -4,9 +4,6 @@ import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -14,6 +11,7 @@ import { UserProfile } from "./user-profile";
 import { Button } from "../ui/button";
 import { useSession } from "@/provider/session-provider";
 import { useWebSocket } from "@/provider/socket-provider";
+import UserCard from "./user-card";
 
 export const UserDropdown = () => {
   const { user } = useSession();
@@ -35,13 +33,8 @@ export const UserDropdown = () => {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
+      <DropdownMenuContent className="w-[300px]">
+        <UserCard userId={user?.id ?? ""} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

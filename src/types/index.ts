@@ -47,5 +47,61 @@ export type ChatWithMember = {
   id: string;
   isGroup: boolean;
   lastOnline: Date | undefined;
-  userId?:string;
+  userId?: string;
+};
+
+export type Message = {
+  createdAt: Date;
+  content: string | null;
+  id: string;
+  chatId: string;
+  updatedAt: Date;
+  senderId: string;
+  replyToId: string | null;
+};
+
+export type Media = {
+  id: string;
+  value: string;
+  createdAt: Date;
+  updatedAt: Date;
+  caption: string;
+  messageId: string;
+};
+
+export type Messages = {
+  createdAt: Date;
+  content: string | null;
+  id: string;
+  chatId: string;
+  senderId: string;
+  replyToId: string | null;
+  replyTo: Message | null;
+  media: Media[];
+  sender: {
+    name: string;
+    image: string;
+  };
+};
+
+export type MessagesPage = {
+  messages: Messages[];
+  nextCursor: string | null;
+};
+
+export type SendMessage = {
+  media: string[];
+  chatId: string;
+  senderId: string;
+  content?: string | undefined;
+  replyToId?: string | undefined;
+};
+
+export type User = {
+  name: string;
+  image: string;
+  id: string;
+  username: string;
+  baner: string;
+  status: string | null;
 };

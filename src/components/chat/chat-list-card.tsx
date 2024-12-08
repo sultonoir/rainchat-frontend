@@ -5,6 +5,8 @@ import { useWebSocket } from "@/provider/socket-provider";
 import { UserAvatar } from "../user/user-avatar";
 import { fromNow } from "@/lib/from-now";
 import Link from "next/link";
+import { useSidebar } from "@/hooks/use-sidebar";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface Props {
   chat: Chatlist;
@@ -13,9 +15,19 @@ interface Props {
 export const ChatListCard = ({ chat }: Props) => {
   const { onlineUsers } = useWebSocket();
   const online = onlineUsers.includes(chat.userId ?? "");
+  const isMobile = useIsMobile();
+  const { toggle } = useSidebar();
+
+  const handleClikced = () => {
+    if (isMobile) {
+      toggle();
+    }
+  };
+
   return (
     <div className="flex py-2 first:pt-0 last:pb-0">
       <Link
+        onClick={handleClikced}
         href={`/chat/${chat.id}`}
         className="flex w-full gap-2 rounded-lg p-2 hover:bg-accent/50"
       >

@@ -4,27 +4,26 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import MessageLoading from "./message-loading";
 import { Button, ButtonProps } from "../ui/button";
+import { Media } from "@/types";
+import Image from "next/image";
 
 // ChatBubble
-const chatBubbleVariant = cva(
-  "flex gap-2 max-w-[60%] items-end relative group",
-  {
-    variants: {
-      variant: {
-        received: "self-start",
-        sent: "self-end flex-row-reverse",
-      },
-      layout: {
-        default: "",
-        ai: "max-w-full w-full items-center",
-      },
+const chatBubbleVariant = cva("flex gap-2 max-w-xs items-end relative group", {
+  variants: {
+    variant: {
+      received: "self-start text-start",
+      sent: "self-end flex-row-reverse text-end",
     },
-    defaultVariants: {
-      variant: "received",
-      layout: "default",
+    layout: {
+      default: "",
+      ai: "max-w-full w-full items-center",
     },
   },
-);
+  defaultVariants: {
+    variant: "received",
+    layout: "default",
+  },
+});
 
 interface ChatBubbleProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -35,7 +34,7 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     <div
       className={cn(
         chatBubbleVariant({ variant, layout, className }),
-        "relative group",
+        "group relative",
       )}
       ref={ref}
       {...props}
@@ -61,12 +60,12 @@ interface ChatBubbleAvatarProps {
 }
 
 const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
-  src,
+  src = "/avatar.png",
   fallback,
   className,
 }) => (
   <Avatar className={className}>
-    <AvatarImage src={src} alt="Avatar" />
+    <AvatarImage src={src === "" ? "/avatar.png" : src} alt="Avatar" />
     <AvatarFallback>{fallback}</AvatarFallback>
   </Avatar>
 );
@@ -77,7 +76,7 @@ const chatBubbleMessageVariants = cva("p-4", {
     variant: {
       received:
         "bg-secondary text-secondary-foreground rounded-r-lg rounded-tl-lg",
-      sent: "bg-primary text-primary-foreground rounded-l-lg rounded-tr-lg",
+      sent: "bg-accent/40 text-primary-foreground rounded-l-lg rounded-tr-lg",
     },
     layout: {
       default: "",
@@ -107,7 +106,7 @@ const ChatBubbleMessage = React.forwardRef<
     <div
       className={cn(
         chatBubbleMessageVariants({ variant, layout, className }),
-        "break-words max-w-full whitespace-pre-wrap",
+        "max-w-full whitespace-pre-wrap break-words text-primary-foreground",
       )}
       ref={ref}
       {...props}
@@ -135,10 +134,63 @@ const ChatBubbleTimestamp: React.FC<ChatBubbleTimestampProps> = ({
   className,
   ...props
 }) => (
-  <div className={cn("text-xs mt-2 text-right", className)} {...props}>
+  <div
+    className={cn("mt-2 text-right text-xs text-muted-foreground", className)}
+    {...props}
+  >
     {timestamp}
   </div>
 );
+
+interface ChatBubbleGaleryProps extends React.HTMLAttributes<HTMLDivElement> {
+  media: Media[];
+}
+
+const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
+  className,
+  media,
+}) => {
+  return (
+    <>
+      {media.length <= 1 ? (
+        <div
+          className={cn(
+            "relative aspect-square size-64 overflow-hidden rounded-lg",
+            className,
+          )}
+        >
+          <Image
+            fill
+            src={media.at(0)?.value ?? "/avatar.png"}
+            alt="image"
+            sizes="100%"
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <div className="grid size-64 grid-cols-2 gap-1 rounded-2xl">
+          {media.map((m) => (
+            <div
+              className={cn(
+                "relative aspect-square overflow-hidden rounded-lg",
+                className,
+              )}
+              key={m.id}
+            >
+              <Image
+                fill
+                src={m.value}
+                sizes="100%"
+                alt="image"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
 
 // ChatBubbleAction
 type ChatBubbleActionProps = ButtonProps & {
@@ -177,7 +229,7 @@ const ChatBubbleActionWrapper = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "absolute top-1/2 -translate-y-1/2 flex opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+      "absolute top-1/2 flex -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
       variant === "sent"
         ? "-left-1 -translate-x-full flex-row-reverse"
         : "-right-1 translate-x-full",
@@ -199,4 +251,5 @@ export {
   chatBubbleMessageVariants,
   ChatBubbleAction,
   ChatBubbleActionWrapper,
+  ChatBubbleGalery,
 };

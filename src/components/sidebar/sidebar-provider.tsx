@@ -1,80 +1,40 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "../../hooks/use-sidebar";
 import { Sidebar } from "@/components/sidebar/sidebar";
+import { cn } from "@/lib/utils";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-const sidebarVariants = {
-  open: {
-    display: "flex",
-    width: "350px", // Lebih kecil agar lebih cepat
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 200, // Kurangi stiffness untuk pergerakan lebih halus
-      damping: 25, // Kurangi damping untuk menghindari animasi terlalu lambat
-    },
-  },
-  closed: {
-    display: "none",
-    width: "0px",
-    opacity: 0,
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-    },
-  },
-};
-
-const contentVariants = {
-  open: {
-    marginLeft: "350px",
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-    },
-  },
-  closed: {
-    marginLeft: "0px",
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 25,
-    },
-  },
-};
-
 export function SidebarProvider({ children }: LayoutProps) {
   const { isOpen } = useSidebar();
 
   return (
-    <div className="flex min-h-screen overflow-hidden">
-      <AnimatePresence>
-        <motion.div
-          initial="open"
-          animate={isOpen ? "open" : "closed"}
-          exit="closed" // Tambahkan animasi keluar
-          variants={sidebarVariants}
-          className="fixed left-0 top-0 h-full bg-secondary shadow-xl will-change-transform" // Optimisasi dengan will-change
-        >
-          <Sidebar />
-        </motion.div>
-      </AnimatePresence>
-
-      <motion.div
-        initial="open"
-        animate={isOpen ? "open" : "closed"}
-        variants={contentVariants}
-        className="flex-1 transition-transform will-change-transform" // Optimisasi dengan will-change
+    <div className="flex h-svh overflow-hidden">
+      <div
+        className={cn(
+          "ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] fixed left-0 top-0 z-10 h-full w-full bg-secondary shadow-xl transition-all duration-300 will-change-transform md:w-[350px]",
+          {
+            "-translate-x-full opacity-0": !isOpen,
+            "translate-x-0 opacity-100": isOpen,
+          },
+        )}
+      >
+        <Sidebar />
+      </div>
+      <div
+        className={cn(
+          "ease-[cubic-bezier(0.4, 0.0, 0.2, 1)] flex-1 transition-all duration-300 will-change-transform",
+          {
+            "ml-[350px]": isOpen,
+            "ml-0": !isOpen,
+          },
+        )}
       >
         {children}
-      </motion.div>
+      </div>
     </div>
   );
 }

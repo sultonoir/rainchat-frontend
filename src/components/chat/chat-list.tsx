@@ -43,7 +43,13 @@ export const ChatList = () => {
             <ChatListEmpty />
           ) : (
             <div className="flex flex-1 flex-col divide-y overflow-y-auto p-4 pt-0">
-              {data?.map((item) => <ChatListCard chat={item} key={item.id} />)}
+              {data
+                ?.sort(
+                  (a, b) =>
+                    new Date(b.lastSent).getTime() -
+                    new Date(a.lastSent).getTime(),
+                )
+                .map((item) => <ChatListCard chat={item} key={item.id} />)}
             </div>
           )}
         </>
