@@ -150,7 +150,6 @@ export const ChatBody = ({ id }: Props) => {
 
 const ChatLoader = ({
   isFetchingNextPage,
-  hasNextPage,
 }: {
   isFetchingNextPage: boolean;
   hasNextPage: boolean | undefined;
@@ -159,13 +158,6 @@ const ChatLoader = ({
     return (
       <div className="flex justify-center py-2">
         <p className="text-muted-foreground">Loading more messages...</p>
-      </div>
-    );
-  }
-  if (!hasNextPage) {
-    return (
-      <div className="flex justify-center py-2">
-        <p className="text-muted-foreground">No more messages</p>
       </div>
     );
   }

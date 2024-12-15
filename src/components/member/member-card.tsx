@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +36,7 @@ export function MemberCard({ isMobile, member }: Props) {
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <Button variant="ghost" className="h-fit w-full justify-start p-2">
-            <UserAvatar online={online} />
+            <UserAvatar online={online} src={member.user.image} />
             <div className="flex flex-col">
               <h3>{member.name ?? member.user.username}</h3>
               <p className="text-xs text-muted-foreground">
@@ -67,7 +68,7 @@ export function MemberCard({ isMobile, member }: Props) {
     <HoverCard>
       <HoverCardTrigger asChild>
         <Button variant="ghost" className="h-fit w-full justify-start p-2">
-          <UserAvatar online={online} />
+          <UserAvatar online={online} src={member.user.image} />
           <div className="flex flex-col">
             <h3>{member.name ?? member.user.username}</h3>
             <p className="text-xs text-muted-foreground">
@@ -77,7 +78,7 @@ export function MemberCard({ isMobile, member }: Props) {
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className="size-fit rounded-2xl border-none p-0"
+        className="w-[300px] rounded-2xl border-none p-0"
         side="right"
       >
         <UserCard userId={member.userId} />

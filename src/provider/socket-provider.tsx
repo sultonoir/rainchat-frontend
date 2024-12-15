@@ -11,7 +11,9 @@ import io, { Socket } from "socket.io-client";
 
 // URL server WebSocket
 const socketURL =
-  process.env.NODE_ENV === "development" ? "http://localhost:8000" : "/";
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : process.env.NEXT_PUBLIC_WS_URL;
 // Pastikan URL ini sesuai dengan server yang Anda jalankan
 
 // Tipe untuk WebSocket Context

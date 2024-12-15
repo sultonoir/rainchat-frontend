@@ -40,7 +40,7 @@ export type Member = {
 };
 
 export type ChatWithMember = {
-  members: Member[];
+  member: Member[];
   name: string;
   image: string;
   desc: string;

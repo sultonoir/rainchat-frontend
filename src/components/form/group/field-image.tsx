@@ -46,6 +46,7 @@ export default function FieldImage({ setImages, images }: FieldImageProps) {
               src={URL.createObjectURL(item)}
               alt="@shadcn"
               key={item.name}
+              className="object-cover"
             />
           ))}
           <AvatarFallback>CN</AvatarFallback>

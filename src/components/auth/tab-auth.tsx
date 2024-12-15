@@ -2,12 +2,14 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FormSignin } from "../form/signin/form-signin";
 import { FormSignup } from "../form/signup/form-signup";
+import { FormDemo } from "../form/demo/form-demo";
 
 export function TabAuth() {
   return (
@@ -27,6 +29,9 @@ export function TabAuth() {
           <CardContent>
             <FormSignin />
           </CardContent>
+          <CardFooter>
+            <FormDemo />
+          </CardFooter>
         </Card>
       </TabsContent>
       <TabsContent value="signup">
@@ -38,6 +43,9 @@ export function TabAuth() {
           <CardContent>
             <FormSignup />
           </CardContent>
+          <CardFooter>
+            <FormDemo />
+          </CardFooter>
         </Card>
       </TabsContent>
     </Tabs>

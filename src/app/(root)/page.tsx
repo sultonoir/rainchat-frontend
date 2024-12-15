@@ -1,3 +1,4 @@
+import { ChatListEmpty } from "@/components/chat/chat-list-empty";
 import { Metadata } from "next";
 import React from "react";
 
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-  return <div>hallo</div>;
+  return <ChatListEmpty />;
 };
 
 export default Page;

@@ -18,7 +18,7 @@ interface UserCardProps extends React.HtmlHTMLAttributes<HTMLElement> {
 }
 
 export default function UserCard({ userId, className }: UserCardProps) {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
       try {
@@ -32,6 +32,18 @@ export default function UserCard({ userId, className }: UserCardProps) {
   const online = onlineUsers.includes(userId);
   const { user } = useSession();
   const isMe = userId === user?.id;
+
+  if (isLoading) {
+    return (
+      <Button
+        size="icon"
+        variant="outline"
+        className="rounded-full"
+        loading={isLoading}
+        disabled={isLoading}
+      />
+    );
+  }
   return (
     <div
       className={cn(
@@ -44,6 +56,7 @@ export default function UserCard({ userId, className }: UserCardProps) {
           alt={data?.name ?? "image profile"}
           src={data?.baner && data.baner !== "" ? data.baner : "/banner.webp"}
           fill
+          sizes="300px"
           className="size-full object-cover"
         />
       </div>
@@ -124,6 +137,7 @@ function FormSendDm({ userId }: UserCardProps) {
         disabled={isPending}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        placeholder="send message"
       />
       <Button type="submit" className="hidden">
         Clickme

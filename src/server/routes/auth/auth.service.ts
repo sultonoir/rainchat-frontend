@@ -23,3 +23,19 @@ export async function signup(data: SignupSchema) {
     throw new Error(message);
   }
 }
+
+export async function demo() {
+  const data = {
+    email: process.env.NEXT_PUBLIC_DEMO_EMAIL,
+    password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
+  };
+  console.log(data);
+  try {
+    await ky.post("/v1/auth/login", {
+      json: data,
+    });
+  } catch (error) {
+    const message = await getGlobalError(error);
+    throw new Error(message);
+  }
+}

@@ -157,6 +157,7 @@ export function FormEditUser() {
             />
             <Button
               disabled={form.formState.isSubmitting || isPending}
+              loading={form.formState.isSubmitting || isPending}
               type="submit"
               className="w-full"
             >

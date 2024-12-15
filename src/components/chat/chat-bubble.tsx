@@ -1,11 +1,11 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import MessageLoading from "./message-loading";
 import { Button, ButtonProps } from "../ui/button";
 import { Media } from "@/types";
 import Image from "next/image";
+import { CustomImage } from "../ui/custom-image";
 
 // ChatBubble
 const chatBubbleVariant = cva("flex gap-2 max-w-xs items-end relative group", {
@@ -63,12 +63,7 @@ const ChatBubbleAvatar: React.FC<ChatBubbleAvatarProps> = ({
   src = "/avatar.png",
   fallback,
   className,
-}) => (
-  <Avatar className={className}>
-    <AvatarImage src={src === "" ? "/avatar.png" : src} alt="Avatar" />
-    <AvatarFallback>{fallback}</AvatarFallback>
-  </Avatar>
-);
+}) => <CustomImage src={src} name={fallback} className={className} />;
 
 // ChatBubbleMessage
 const chatBubbleMessageVariants = cva("p-4", {

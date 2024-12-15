@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Users } from "lucide-react";
+import { MessagesSquareIcon } from "lucide-react";
 import React from "react";
 import FieldImage from "./field-image";
 import { useUploadThing } from "@/lib/uploadthing";
@@ -104,8 +104,8 @@ export function FormCreatGroup() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Users />
+        <Button variant="ghost" size="icon" title="create group">
+          <MessagesSquareIcon />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

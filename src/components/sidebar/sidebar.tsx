@@ -13,8 +13,10 @@ export function Sidebar() {
           <Image src="/logo.png" width={40} height={40} alt="logo" />
           <h2 className="text-xl font-bold text-white">Rainchat</h2>
         </div>
-        <FormCreatGroup />
-        <SidebarTrigger />
+        <div className="flex items-center gap-2">
+          <FormCreatGroup />
+          <SidebarTrigger />
+        </div>
       </div>
       <ChatList />
       <div className="flex flex-none items-center justify-between p-4 pt-0">

@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { Search, Users } from "lucide-react";
 import useShow from "@/hooks/use-show";
@@ -12,6 +11,7 @@ import { Input } from "../ui/input";
 import { SidebarTrigger } from "../sidebar/sidebar-trigger";
 import { useWebSocket } from "@/provider/socket-provider";
 import { fromNow } from "@/lib/from-now";
+import { CustomImage } from "../ui/custom-image";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
@@ -29,13 +29,7 @@ export const ChatHeader = ({ chat, className }: Props) => {
           <SidebarTrigger />
           {chat.isGroup ? (
             <div className="flex items-center gap-2">
-              <Avatar className="flex-none flex-shrink-0">
-                <AvatarImage
-                  src={chat.image}
-                  className="size-full object-cover"
-                />
-                <AvatarFallback>{chat.name.at(0)}</AvatarFallback>
-              </Avatar>
+              <CustomImage src={chat.image} name={chat.name} />
               <div className="flex flex-1 flex-col">
                 <h3 className="line-clamp-1">{chat.name}</h3>
                 <p className="text-xs text-muted-foreground">{chat.desc}</p>
@@ -63,14 +57,16 @@ export const ChatHeader = ({ chat, className }: Props) => {
           >
             <Search />
           </Button>
-          <Button
-            onClick={setShow}
-            size="icon"
-            className="flex-none flex-shrink-0 rounded-full hover:bg-primary/10 hover:text-primary"
-            variant="ghost"
-          >
-            <Users />
-          </Button>
+          {chat.isGroup && (
+            <Button
+              onClick={setShow}
+              size="icon"
+              className="flex-none flex-shrink-0 rounded-full hover:bg-primary/10 hover:text-primary"
+              variant="ghost"
+            >
+              <Users />
+            </Button>
+          )}
         </div>
       </div>
     </div>
