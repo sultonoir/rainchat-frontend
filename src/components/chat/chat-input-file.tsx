@@ -240,7 +240,12 @@ function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
             >
               <Trash2 />
             </Button>
-            <Image src={URL.createObjectURL(item)} alt={item.name} fill />
+            <Image
+              src={URL.createObjectURL(item)}
+              alt={item.name}
+              fill
+              className="size-full object-cover"
+            />
           </li>
         ))}
         <Label
