@@ -15,7 +15,7 @@ export const CustomImage = ({
   return (
     <div
       className={cn(
-        "relative aspect-square size-10 overflow-hidden rounded-full",
+        "relative aspect-square size-10 flex-none flex-shrink-0 overflow-hidden rounded-full",
         className,
       )}
     >

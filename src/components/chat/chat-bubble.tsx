@@ -148,20 +148,13 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
   return (
     <>
       {media.length <= 1 ? (
-        <div
-          className={cn(
-            "relative aspect-square size-64 overflow-hidden rounded-lg",
-            className,
-          )}
-        >
-          <Image
-            fill
-            src={media.at(0)?.value ?? "/avatar.png"}
-            alt="image"
-            sizes="100%"
-            className="object-cover"
-          />
-        </div>
+        <Image
+          src={media.at(0)?.value ?? "/avatar.png"}
+          alt="image"
+          width={200}
+          height={200}
+          className="size-full rounded-lg object-cover"
+        />
       ) : (
         <div className="grid size-64 grid-cols-2 gap-1 rounded-2xl">
           {media.map((m) => (

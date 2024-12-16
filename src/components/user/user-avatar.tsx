@@ -16,7 +16,7 @@ export const UserAvatar = ({
   className,
 }: Props) => {
   return (
-    <div className={cn("relative flex-none flex-shrink-0")}>
+    <div className={cn("relative size-10 flex-none flex-shrink-0", className)}>
       <div
         className={cn(
           "relative aspect-square size-10 overflow-hidden rounded-full",
@@ -31,7 +31,6 @@ export const UserAvatar = ({
           className="size-full object-cover"
         />
       </div>
-
       <div className="absolute -right-1 bottom-0 z-20 size-5 rounded-full bg-secondary p-1">
         <div
           className={cn("z-30 size-full rounded-full bg-green-500", {

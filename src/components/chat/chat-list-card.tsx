@@ -20,74 +20,66 @@ export const ChatListCard = ({ chat }: Props) => {
   const { toggle } = useSidebar();
   const ctx = useQueryClient();
 
-  const upadeMessage = React.useCallback(
+  const updateMessage = React.useCallback(
     (data: Messages) => {
       ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
-        if (!oldData) {
-          return [];
-        }
+        if (!oldData) return [];
 
-        const exist = oldData.some((o) => o.id === data.chatId);
-
-        return exist
-          ? oldData.map((item) =>
-              item.id === data.chatId
-                ? {
-                    ...item,
-                    lastMessage: data.content ?? "",
-                    lastSent: data.createdAt,
-                  }
-                : item,
-            )
-          : [...oldData];
+        return oldData.map((item) =>
+          item.id === data.chatId
+            ? {
+                ...item,
+                lastMessage: data.content ?? "",
+                lastSent: data.createdAt,
+              }
+            : item,
+        );
       });
-      ctx.setQueryData<InfiniteData<MessagesPage, string | null>>(
+
+      ctx.setQueryData<InfiniteData<MessagesPage>>(
         ["message-list", chat.id],
         (oldData) => {
-          if (!oldData) {
-            return {
-              pages: [],
-              pageParams: [],
-            };
-          }
+          if (!oldData) return { pages: [], pageParams: [] };
 
           return {
             ...oldData,
-            pages: oldData.pages.flatMap((page, index) => {
-              // Modify only the first page or append to a specific one
-              if (index === oldData.pages.length - 1) {
-                return {
-                  ...page,
-                  messages: [...page.messages, data],
-                };
-              }
-              return page;
-            }),
+            pages: oldData.pages.map((page, index) =>
+              index === oldData.pages.length - 1
+                ? { ...page, messages: [...page.messages, data] }
+                : page,
+            ),
           };
         },
       );
     },
     [chat.id, ctx],
   );
+  const hasJoinedGroup = React.useRef(new Set<string>());
 
   React.useEffect(() => {
-    if (socket) {
-      socket.emit("join group", chat.id);
+    if (!socket) return;
 
-      const handleSendMessage = (data: Messages) => {
-        console.log(data);
-        upadeMessage(data);
-      };
+    // Gunakan ref untuk melacak grup yang sudah di-join
 
-      socket.on("sendMessage", handleSendMessage);
-
-      return () => {
-        socket.off("sendMessage", handleSendMessage);
-      };
+    if (!hasJoinedGroup.current.has(chat.id)) {
+      socket.emit("join group", chat.id); // Emit hanya sekali untuk tiap chat.id
+      hasJoinedGroup.current.add(chat.id);
     }
-  }, [chat.id, socket, upadeMessage]);
 
-  const handleClikced = () => {
+    const handleSendMessage = (data: Messages) => {
+      updateMessage(data); // Fungsi untuk memperbarui data React Query
+    };
+
+    // Tambahkan listener untuk event "sendMessage"
+    socket.on("sendMessage", handleSendMessage);
+
+    // Cleanup: hapus listener dan reset grup saat komponen unmount
+    return () => {
+      socket.off("sendMessage", handleSendMessage);
+    };
+  }, [chat.id, socket, updateMessage]);
+
+  const handleClicked = () => {
     if (isMobile) {
       toggle();
     }
@@ -96,7 +88,7 @@ export const ChatListCard = ({ chat }: Props) => {
   return (
     <div className="flex py-2 first:pt-0 last:pb-0">
       <Link
-        onClick={handleClikced}
+        onClick={handleClicked}
         href={`/chat/${chat.id}`}
         className="flex w-full gap-2 rounded-lg p-2 hover:bg-accent/50"
       >

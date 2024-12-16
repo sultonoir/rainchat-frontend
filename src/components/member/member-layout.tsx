@@ -14,8 +14,19 @@ interface Props {
 }
 
 export const MemberLayout = ({ members }: Props) => {
+  const [value, setValue] = React.useState("");
   const isMobile = useIsMobile();
   const { show } = useShow();
+
+  const filterMember = React.useMemo(() => {
+    const trimmedValue = value.trim().toLowerCase();
+    if (trimmedValue !== "") {
+      return members.filter((i) =>
+        i.name?.toLowerCase().includes(trimmedValue),
+      );
+    }
+    return members;
+  }, [members, value]);
 
   const sidebarVariants = {
     open: {
@@ -53,11 +64,16 @@ export const MemberLayout = ({ members }: Props) => {
         })}
       >
         <div className="flex w-full flex-col">
-          <div className="flex flex-none p-2 md:hidden">
-            <Input />
+          <div className="flex flex-none p-2">
+            <Input
+              placeholder="search member..."
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              type="search"
+            />
           </div>
           <div className="flex h-[calc(100dvh-90px)] flex-col gap-2 overflow-y-auto p-3 lg:h-full lg:flex-1">
-            {members?.map((m) => (
+            {filterMember.map((m) => (
               <MemberCard key={m.id} isMobile={isMobile} member={m} />
             ))}
           </div>
