@@ -6,6 +6,11 @@ import { Button, ButtonProps } from "../ui/button";
 import { Media } from "@/types";
 import Image from "next/image";
 import { CustomImage } from "../ui/custom-image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // ChatBubble
 const chatBubbleVariant = cva("flex gap-2 max-w-xs items-end relative group", {
@@ -191,17 +196,25 @@ const ChatBubbleAction: React.FC<ChatBubbleActionProps> = ({
   className,
   variant = "ghost",
   size = "icon",
+  title,
   ...props
 }) => (
-  <Button
-    variant={variant}
-    size={size}
-    className={className}
-    onClick={onClick}
-    {...props}
-  >
-    {icon}
-  </Button>
+  <Tooltip delayDuration={0}>
+    <TooltipTrigger asChild>
+      <Button
+        variant={variant}
+        size={size}
+        className={className}
+        onClick={onClick}
+        {...props}
+      >
+        {icon}
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>{title}</p>
+    </TooltipContent>
+  </Tooltip>
 );
 
 interface ChatBubbleActionWrapperProps

@@ -69,6 +69,10 @@ export type Media = {
   messageId: string;
 };
 
+export type ReplyTo = Message & {
+  media: Media[];
+};
+
 export type Messages = {
   createdAt: Date;
   content: string | null;
@@ -76,7 +80,7 @@ export type Messages = {
   chatId: string;
   senderId: string;
   replyToId: string | null;
-  replyTo: Message | null;
+  replyTo: ReplyTo | null;
   media: Media[];
   sender: {
     name: string;

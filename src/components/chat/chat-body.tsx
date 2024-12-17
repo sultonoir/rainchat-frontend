@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import ky from "ky";
 import {
   ChatBubble,
@@ -12,7 +17,7 @@ import {
   ChatBubbleMessage,
   ChatBubbleTimestamp,
 } from "@/components/chat/chat-bubble";
-import { Forward, Heart, MoreVertical } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { MessagesPage, Messages } from "@/types";
 import { ChatMessageList } from "./chat-message-list";
 import { ChatFooter } from "./chat-footer";
@@ -20,6 +25,8 @@ import { fromNow } from "@/lib/from-now";
 import { useSession } from "@/provider/session-provider";
 import { ChatListLoader } from "./chat-list-loader";
 import { ChatListEmpty } from "./chat-list-empty";
+import { getGlobalError } from "@/lib/getGlobalError";
+import { toast } from "sonner";
 
 interface Props {
   id: string;
@@ -166,11 +173,6 @@ const ChatLoader = ({
 
 const ChatMessage = ({ message }: { message: Messages }) => {
   const { user } = useSession();
-  const actionIcons = [
-    { icon: MoreVertical, type: "More" },
-    { icon: Forward, type: "Forward" },
-    { icon: Heart, type: "Like" },
-  ];
 
   const isMe = user?.id === message.senderId;
 
@@ -188,17 +190,62 @@ const ChatMessage = ({ message }: { message: Messages }) => {
         )}
       </ChatBubbleMessage>
       <ChatBubbleActionWrapper>
-        {actionIcons.map(({ icon: Icon, type }) => (
-          <ChatBubbleAction
-            className="size-7"
-            key={type}
-            icon={<Icon className="size-4" />}
-            onClick={() =>
-              console.log(`Action ${type} clicked for message ${message.id}`)
-            }
-          />
-        ))}
+        {isMe && <RemoveMessage message={message} />}
       </ChatBubbleActionWrapper>
     </ChatBubble>
   );
 };
+
+function RemoveMessage({ message }: { message: Messages }) {
+  const ctx = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["remove-message"],
+    mutationFn: async () => {
+      try {
+        return ky
+          .delete("/v1/chat/message", {
+            json: {
+              chatId: message.chatId,
+              messageId: message.id,
+            },
+          })
+          .json<string>();
+      } catch (error) {
+        const message = await getGlobalError(error);
+        throw new Error(message);
+      }
+    },
+    onSuccess(data) {
+      ctx.setQueryData<InfiniteData<MessagesPage>>(
+        ["message-list", message.chatId],
+        (oldData) => {
+          if (!oldData) return { pages: [], pageParams: [] };
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => {
+              return {
+                ...page,
+                messages: page.messages.filter((m) => m.id !== data),
+              };
+            }),
+          };
+        },
+      );
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
+  return (
+    <ChatBubbleAction
+      className="size-7"
+      title="Delete"
+      disabled={isPending}
+      loading={isPending}
+      icon={<Trash2 className="size-4" />}
+      onClick={() => mutate()}
+    />
+  );
+}
