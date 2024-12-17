@@ -27,14 +27,10 @@ export type Chatlist = {
 };
 
 export type Member = {
-  user: {
-    image: string;
-    username: string;
-    status: string | null;
-    lastSeen: Date;
-    baner: string | null;
-  };
+  user: User;
   userId: string;
+  role: string;
+  haveAccess: boolean;
   name: string | null;
   id: string;
 };
