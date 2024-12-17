@@ -40,9 +40,13 @@ export const ChatHeader = ({ chat, className }: Props) => {
               <UserAvatar online={online} src={chat.image} />
               <div className="flex flex-1 flex-col">
                 <h3 className="line-clamp-1">{chat.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                  {fromNow(new Date(chat.lastOnline ?? new Date()))}
-                </p>
+                {online ? (
+                  <p className="text-xs text-muted-foreground">Online</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {fromNow(new Date(chat.lastOnline ?? new Date()))}
+                  </p>
+                )}
               </div>
             </div>
           )}

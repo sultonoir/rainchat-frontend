@@ -30,6 +30,11 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ky from "ky";
 import { Chatlist } from "@/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -103,11 +108,19 @@ export function FormCreatGroup() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" title="create group">
-          <MessagesSquareIcon />
-        </Button>
-      </DialogTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="create group">
+              <MessagesSquareIcon />
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Create Group</p>
+        </TooltipContent>
+      </Tooltip>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Group</DialogTitle>

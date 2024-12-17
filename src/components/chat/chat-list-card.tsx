@@ -6,8 +6,22 @@ import { fromNow } from "@/lib/from-now";
 import Link from "next/link";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { CustomImage } from "../ui/custom-image";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from "@/components/ui/context-menu";
+import { LogOut, Table2Icon, Trash2 } from "lucide-react";
+import ky from "ky";
+import { getGlobalError } from "@/lib/getGlobalError";
 
 interface Props {
   chat: Chatlist;
@@ -86,36 +100,115 @@ export const ChatListCard = ({ chat }: Props) => {
   };
 
   return (
-    <div className="flex py-2 first:pt-0 last:pb-0">
-      <Link
-        onClick={handleClicked}
-        href={`/chat/${chat.id}`}
-        className="flex w-full gap-2 rounded-lg p-2 hover:bg-accent/50"
-      >
-        {chat.isGroup ? (
-          <CustomImage src={chat.image} name={chat.name} />
-        ) : (
-          <UserAvatar online={online} src={chat.image} />
-        )}
-        <div className="flex flex-1 flex-col">
-          <div className="flex w-full items-center justify-between">
-            <h3 className="line-clamp-1">{chat.name}</h3>
-            <p className="text-xs text-muted-foreground">
-              {fromNow(new Date(chat.lastSent))}
-            </p>
-          </div>
-          <div className="flex w-full items-center justify-between">
-            <p className="line-clamp-1 text-sm text-muted-foreground">
-              {chat.lastMessage}
-            </p>
-            {chat.unreadCount > 0 && (
-              <p className="rounded-lg bg-primary/10 px-2 py-1 text-xs text-primary">
-                {chat.unreadCount < 99 ? chat.unreadCount : "99+"}
-              </p>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div className="flex py-2 first:pt-0 last:pb-0">
+          <Link
+            onClick={handleClicked}
+            href={`/chat/${chat.id}`}
+            className="flex w-full gap-2 rounded-lg p-2 hover:bg-accent/50"
+          >
+            {chat.isGroup ? (
+              <CustomImage src={chat.image} name={chat.name} />
+            ) : (
+              <UserAvatar online={online} src={chat.image} />
             )}
-          </div>
+            <div className="flex flex-1 flex-col">
+              <div className="flex w-full items-center justify-between">
+                <h3 className="line-clamp-1">{chat.name}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {fromNow(new Date(chat.lastSent))}
+                </p>
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <p className="line-clamp-1 text-sm text-muted-foreground">
+                  {chat.lastMessage}
+                </p>
+              </div>
+            </div>
+          </Link>
         </div>
-      </Link>
-    </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem className="gap-2" asChild>
+          <Link
+            onClick={handleClicked}
+            href={`/chat/${chat.id}`}
+            target="_blank"
+          >
+            <Table2Icon size={20} className="text-muted-foreground" />
+            Open link in the new tab
+          </Link>
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        {chat.isGroup ? (
+          <OutGroup chatId={chat.id} />
+        ) : (
+          <RemoveChatlist chatId={chat.id} />
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
+
+function RemoveChatlist({ chatId }: { chatId: string }) {
+  const ctx = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: ["remove-chatlist"],
+    mutationFn: async () => {
+      try {
+        return await ky.delete(`/v1/chat/chatlist/${chatId}`).json<string>();
+      } catch (error) {
+        const message = await getGlobalError(error);
+        throw new Error(message);
+      }
+    },
+    onSuccess(data) {
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
+        if (!oldData) return [];
+
+        return oldData.filter((d) => d.id !== data);
+      });
+    },
+  });
+
+  return (
+    <ContextMenuItem className="gap-2" onSelect={() => mutate()}>
+      <Trash2 size={20} className="text-muted-foreground" />
+      Remove chatlist
+    </ContextMenuItem>
+  );
+}
+
+function OutGroup({ chatId }: { chatId: string }) {
+  const ctx = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: ["remove-chatlist"],
+    mutationFn: async () => {
+      try {
+        return await ky
+          .post(`/v1/chat/out`, {
+            json: { chatId },
+          })
+          .json<string>();
+      } catch (error) {
+        const message = await getGlobalError(error);
+        throw new Error(message);
+      }
+    },
+    onSuccess(data) {
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
+        if (!oldData) return [];
+
+        return oldData.filter((d) => d.id !== data);
+      });
+    },
+  });
+
+  return (
+    <ContextMenuItem className="gap-2" onSelect={() => mutate()}>
+      <LogOut size={20} className="text-muted-foreground" />
+      Out Group
+    </ContextMenuItem>
+  );
+}
