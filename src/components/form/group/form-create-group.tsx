@@ -63,7 +63,7 @@ export function FormCreatGroup() {
       image: string;
     }) {
       return await ky
-        .post("/v1/chat/group", {
+        .post("/v1/group", {
           json: data,
         })
         .json<Chatlist>();

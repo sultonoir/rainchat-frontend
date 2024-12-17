@@ -23,7 +23,7 @@ export async function getInviteCode(id: string) {
   const cockieStore = await cookies();
   try {
     return await ky
-      .get(getServerurl + `/member/code/${id}`, {
+      .get(getServerurl + `/group/code/${id}`, {
         headers: {
           Cookie: cockieStore.toString(),
         },

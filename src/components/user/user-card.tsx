@@ -97,7 +97,7 @@ function FormSendDm({ userId }: UserCardProps) {
         content: message.trim(),
       };
       return await ky
-        .post("/v1/chat/dm", {
+        .post("/v1/dm", {
           json: data,
         })
         .json<Chatlist>();

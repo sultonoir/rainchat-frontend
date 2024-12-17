@@ -6,11 +6,7 @@ import { fromNow } from "@/lib/from-now";
 import Link from "next/link";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { CustomImage } from "../ui/custom-image";
 import {
   ContextMenu,
@@ -19,9 +15,9 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from "@/components/ui/context-menu";
-import { LogOut, Table2Icon, Trash2 } from "lucide-react";
-import ky from "ky";
-import { getGlobalError } from "@/lib/getGlobalError";
+import { Table2Icon } from "lucide-react";
+import { OutGroup } from "./chat-out-group";
+import { RemoveChatlist } from "./chat-remove";
 
 interface Props {
   chat: Chatlist;
@@ -150,65 +146,3 @@ export const ChatListCard = ({ chat }: Props) => {
     </ContextMenu>
   );
 };
-
-function RemoveChatlist({ chatId }: { chatId: string }) {
-  const ctx = useQueryClient();
-  const { mutate } = useMutation({
-    mutationKey: ["remove-chatlist"],
-    mutationFn: async () => {
-      try {
-        return await ky.delete(`/v1/chat/chatlist/${chatId}`).json<string>();
-      } catch (error) {
-        const message = await getGlobalError(error);
-        throw new Error(message);
-      }
-    },
-    onSuccess(data) {
-      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
-        if (!oldData) return [];
-
-        return oldData.filter((d) => d.id !== data);
-      });
-    },
-  });
-
-  return (
-    <ContextMenuItem className="gap-2" onSelect={() => mutate()}>
-      <Trash2 size={20} className="text-muted-foreground" />
-      Remove chatlist
-    </ContextMenuItem>
-  );
-}
-
-function OutGroup({ chatId }: { chatId: string }) {
-  const ctx = useQueryClient();
-  const { mutate } = useMutation({
-    mutationKey: ["remove-chatlist"],
-    mutationFn: async () => {
-      try {
-        return await ky
-          .post(`/v1/chat/out`, {
-            json: { chatId },
-          })
-          .json<string>();
-      } catch (error) {
-        const message = await getGlobalError(error);
-        throw new Error(message);
-      }
-    },
-    onSuccess(data) {
-      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
-        if (!oldData) return [];
-
-        return oldData.filter((d) => d.id !== data);
-      });
-    },
-  });
-
-  return (
-    <ContextMenuItem className="gap-2" onSelect={() => mutate()}>
-      <LogOut size={20} className="text-muted-foreground" />
-      Out Group
-    </ContextMenuItem>
-  );
-}
