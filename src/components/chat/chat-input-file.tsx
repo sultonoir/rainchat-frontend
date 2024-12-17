@@ -80,7 +80,7 @@ export const ChatInputFile = ({ id, close }: Props) => {
       <Label
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "mb-2 size-9 cursor-pointer",
+          "size-9 cursor-pointer",
         )}
         {...getRootProps}
       >
@@ -164,7 +164,7 @@ function DrawerInput({ onOpenChange, open, id, close }: DialogProps) {
 }
 
 function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
-  const { message ,setMessage} = useMessage();
+  const { message, setMessage } = useMessage();
   const [isPending, setIsPending] = useState(false);
   const { user } = useSession();
   const { startUpload } = useUploadThing("media");
@@ -225,7 +225,7 @@ function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
     close();
     setContent("");
     onOpenChange(false);
-    setMessage(undefined)
+    setMessage(undefined);
   };
 
   return (

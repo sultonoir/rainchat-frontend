@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
@@ -27,9 +29,11 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "emoji-mart": "^5.6.0",
     "framer-motion": "^11.13.1",
     "jwt-decode": "^4.0.0",
     "ky": "^1.7.2",
+    "linkify-react": "^4.2.0",
     "lucide-react": "^0.468.0",
     "next": "15.0.3",
     "next-themes": "^0.4.3",

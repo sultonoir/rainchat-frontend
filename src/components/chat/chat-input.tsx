@@ -10,6 +10,7 @@ import { ChatInputFile } from "./chat-input-file";
 import { useWebSocket } from "@/provider/socket-provider";
 import { useSession } from "@/provider/session-provider";
 import useMessage from "@/hooks/use-message";
+import { EmojiPicker } from "../ui/emoji-picker";
 
 const MIN_HEIGHT = 56;
 
@@ -79,7 +80,14 @@ export function ChatInput({ id, close }: Props) {
   return (
     <div className="flex w-full items-end gap-2">
       {/* File input component */}
-      <ChatInputFile id={id} close={close} />
+      <div className="flex h-full items-center gap-2">
+        <ChatInputFile id={id} close={close} />
+        <EmojiPicker
+          onChange={(value) => {
+            setInputValue(inputValue + value);
+          }}
+        />
+      </div>
 
       {/* Text input */}
       <Textarea
@@ -95,7 +103,6 @@ export function ChatInput({ id, close }: Props) {
         onChange={handleInputChange}
       />
 
-      {/* Send button */}
       <Button
         className={cn(
           "mb-2 size-9 flex-none flex-shrink-0 rounded-full bg-black/5 px-1 py-1 dark:bg-white/5",

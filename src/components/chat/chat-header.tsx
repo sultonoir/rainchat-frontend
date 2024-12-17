@@ -12,6 +12,7 @@ import { SidebarTrigger } from "../sidebar/sidebar-trigger";
 import { useWebSocket } from "@/provider/socket-provider";
 import { fromNow } from "@/lib/from-now";
 import { CustomImage } from "../ui/custom-image";
+import { CopyButton } from "../ui/copy-button";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
@@ -62,14 +63,17 @@ export const ChatHeader = ({ chat, className }: Props) => {
             <Search />
           </Button>
           {chat.isGroup && (
-            <Button
-              onClick={setShow}
-              size="icon"
-              className="flex-none flex-shrink-0 rounded-full hover:bg-primary/10 hover:text-primary"
-              variant="ghost"
-            >
-              <Users />
-            </Button>
+            <>
+              <CopyButton />
+              <Button
+                onClick={setShow}
+                size="icon"
+                className="flex-none flex-shrink-0 rounded-full hover:bg-primary/10 hover:text-primary"
+                variant="ghost"
+              >
+                <Users />
+              </Button>
+            </>
           )}
         </div>
       </div>

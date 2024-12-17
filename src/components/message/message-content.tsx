@@ -12,6 +12,7 @@ import { fromNow } from "@/lib/from-now";
 import { RemoveMessage } from "./message-remove";
 import { ReplyMessage } from "./message-reply";
 import { MessageReplyContent } from "./message-reply-content";
+import { LinkifyUrl } from "../ui/linkify";
 
 export const MessageContent = ({ message }: { message: Messages }) => {
   const { user } = useSession();
@@ -31,7 +32,8 @@ export const MessageContent = ({ message }: { message: Messages }) => {
           />
         )}
         {!!message.media.length && <ChatBubbleGalery media={message.media} />}
-        {message.content}
+        <LinkifyUrl message={message.content ?? ""} />
+
         {message.createdAt && (
           <ChatBubbleTimestamp
             timestamp={fromNow(new Date(message.createdAt))}

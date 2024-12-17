@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { WebSocketProvider } from "./socket-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "./theme-provide";
 
 interface Props {
   children: React.ReactNode;
@@ -17,7 +18,9 @@ export default function Provider({ children, user }: Props) {
     <ReactProvider>
       <SessionProvider user={user}>
         <WebSocketProvider user={user}>
-          <TooltipProvider>{children}</TooltipProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark">
+            <TooltipProvider>{children}</TooltipProvider>
+          </ThemeProvider>
         </WebSocketProvider>
       </SessionProvider>
       <Toaster richColors position="bottom-left" />
