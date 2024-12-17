@@ -7,6 +7,7 @@ import { WebSocketProvider } from "./socket-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "./theme-provide";
+import { MediaDialog } from "@/components/ui/media-dialog";
 
 interface Props {
   children: React.ReactNode;
@@ -23,7 +24,8 @@ export default function Provider({ children, user }: Props) {
           </ThemeProvider>
         </WebSocketProvider>
       </SessionProvider>
-      <Toaster richColors position="bottom-left" />
+      <MediaDialog />
+      <Toaster richColors position="top-center" />
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
     </ReactProvider>
   );

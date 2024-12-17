@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useMediaDialog } from "@/hooks/use-media-dialog";
 
 // ChatBubble
 const chatBubbleVariant = cva("flex gap-2 max-w-xs items-end relative group", {
@@ -150,6 +151,8 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
   className,
   media,
 }) => {
+  const { setMedia, setShow } = useMediaDialog();
+
   return (
     <>
       {media.length <= 1 ? (
@@ -159,6 +162,10 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
           width={200}
           height={200}
           className="size-full rounded-lg object-cover"
+          onClick={() => {
+            setMedia(media.at(0)?.value);
+            setShow(true);
+          }}
         />
       ) : (
         <div className="grid size-64 grid-cols-2 gap-1 rounded-2xl">
@@ -169,6 +176,10 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
                 className,
               )}
               key={m.id}
+              onClick={() => {
+                setShow(true);
+                setMedia(m.value);
+              }}
             >
               <Image
                 fill
