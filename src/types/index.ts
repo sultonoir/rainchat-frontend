@@ -48,6 +48,7 @@ export type ChatWithMember = {
   isGroup: boolean;
   lastOnline: Date | undefined;
   userId?: string;
+  invitedCode: string;
 };
 
 export type Message = {

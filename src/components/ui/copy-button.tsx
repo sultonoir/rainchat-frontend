@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export const CopyButton = () => {
+export const CopyButton = ({ code }: { code: string }) => {
   const [copied, setCopied] = useState(false);
 
   function getBaseUrl() {
@@ -20,7 +20,7 @@ export const CopyButton = () => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(getBaseUrl() + "/lol"); // Menyalin URL ke clipboard
+      await navigator.clipboard.writeText(getBaseUrl() + `/invite/${code}`); // Menyalin URL ke clipboard
       setCopied(true);
 
       // Reset notifikasi setelah beberapa detik

@@ -64,7 +64,7 @@ export const ChatHeader = ({ chat, className }: Props) => {
           </Button>
           {chat.isGroup && (
             <>
-              <CopyButton />
+              <CopyButton code={chat.invitedCode} />
               <Button
                 onClick={setShow}
                 size="icon"

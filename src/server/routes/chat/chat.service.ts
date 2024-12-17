@@ -18,3 +18,18 @@ export async function getChatById(id: string) {
     return undefined;
   }
 }
+
+export async function getInviteCode(id: string) {
+  const cockieStore = await cookies();
+  try {
+    return await ky
+      .get(getServerurl + `/member/code/${id}`, {
+        headers: {
+          Cookie: cockieStore.toString(),
+        },
+      })
+      .json<ChatWithMember>();
+  } catch (error) {
+    return undefined;
+  }
+}

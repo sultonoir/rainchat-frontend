@@ -17,9 +17,11 @@ import { PasswordInput } from "@/components/ui/input-password";
 import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/server/routes/auth/auth.service";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function FormSignup() {
+  const searchParams = useSearchParams();
+  const code = searchParams.get("code");
   const form = useForm<SignupSchema>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
@@ -39,6 +41,9 @@ export function FormSignup() {
       toast.error(data.message);
     },
     onSuccess() {
+      if (code) {
+        router.push(`/invite/${code}`);
+      }
       router.refresh();
     },
   });

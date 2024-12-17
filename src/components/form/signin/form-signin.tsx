@@ -17,9 +17,11 @@ import { PasswordInput } from "@/components/ui/input-password";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/server/routes/auth/auth.service";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function FormSignin() {
+  const searchParams = useSearchParams();
+  const code = searchParams.get("code");
   const form = useForm<SigninSchema>({
     resolver: zodResolver(SigninSchema),
     defaultValues: {
@@ -37,6 +39,9 @@ export function FormSignin() {
       toast.error(data.message);
     },
     onSuccess() {
+      if (code) {
+        router.push(`/chat/${code}`);
+      }
       router.refresh();
     },
   });
