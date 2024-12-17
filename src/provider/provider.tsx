@@ -21,7 +21,7 @@ export default function Provider({ children, user }: Props) {
         </WebSocketProvider>
       </SessionProvider>
       <Toaster richColors position="bottom-left" />
-      {/* <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" /> */}
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
     </ReactProvider>
   );
 }

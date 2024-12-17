@@ -1,32 +1,14 @@
 "use client";
 
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import {
-  InfiniteData,
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import ky from "ky";
-import {
-  ChatBubble,
-  ChatBubbleAction,
-  ChatBubbleActionWrapper,
-  ChatBubbleAvatar,
-  ChatBubbleGalery,
-  ChatBubbleMessage,
-  ChatBubbleTimestamp,
-} from "@/components/chat/chat-bubble";
-import { Trash2 } from "lucide-react";
-import { MessagesPage, Messages } from "@/types";
+import { MessagesPage } from "@/types";
 import { ChatMessageList } from "./chat-message-list";
 import { ChatFooter } from "./chat-footer";
-import { fromNow } from "@/lib/from-now";
-import { useSession } from "@/provider/session-provider";
 import { ChatListLoader } from "./chat-list-loader";
 import { ChatListEmpty } from "./chat-list-empty";
-import { getGlobalError } from "@/lib/getGlobalError";
-import { toast } from "sonner";
+import { MessageContent } from "../message/message-content";
 
 interface Props {
   id: string;
@@ -141,7 +123,7 @@ export const ChatBody = ({ id }: Props) => {
                   hasNextPage={hasNextPage}
                 />
                 {messages.map((item, index) => (
-                  <ChatMessage key={index} message={item} />
+                  <MessageContent key={index} message={item} />
                 ))}
               </ChatMessageList>
             );
@@ -170,82 +152,3 @@ const ChatLoader = ({
   }
   return null;
 };
-
-const ChatMessage = ({ message }: { message: Messages }) => {
-  const { user } = useSession();
-
-  const isMe = user?.id === message.senderId;
-
-  return (
-    <ChatBubble variant={isMe ? "sent" : "received"}>
-      <ChatBubbleAvatar src={message.sender.image} />
-      <ChatBubbleMessage>
-        <p className="text-sm text-white">{message.sender.name}</p>
-        {!!message.media.length && <ChatBubbleGalery media={message.media} />}
-        {message.content}
-        {message.createdAt && (
-          <ChatBubbleTimestamp
-            timestamp={fromNow(new Date(message.createdAt))}
-          />
-        )}
-      </ChatBubbleMessage>
-      <ChatBubbleActionWrapper>
-        {isMe && <RemoveMessage message={message} />}
-      </ChatBubbleActionWrapper>
-    </ChatBubble>
-  );
-};
-
-function RemoveMessage({ message }: { message: Messages }) {
-  const ctx = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["remove-message"],
-    mutationFn: async () => {
-      try {
-        return ky
-          .delete("/v1/chat/message", {
-            json: {
-              chatId: message.chatId,
-              messageId: message.id,
-            },
-          })
-          .json<string>();
-      } catch (error) {
-        const message = await getGlobalError(error);
-        throw new Error(message);
-      }
-    },
-    onSuccess(data) {
-      ctx.setQueryData<InfiniteData<MessagesPage>>(
-        ["message-list", message.chatId],
-        (oldData) => {
-          if (!oldData) return { pages: [], pageParams: [] };
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => {
-              return {
-                ...page,
-                messages: page.messages.filter((m) => m.id !== data),
-              };
-            }),
-          };
-        },
-      );
-    },
-    onError(error) {
-      toast.error(error.message);
-    },
-  });
-  return (
-    <ChatBubbleAction
-      className="size-7"
-      title="Delete"
-      disabled={isPending}
-      loading={isPending}
-      icon={<Trash2 className="size-4" />}
-      onClick={() => mutate()}
-    />
-  );
-}

@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { ChatInputFile } from "./chat-input-file";
 import { useWebSocket } from "@/provider/socket-provider";
 import { useSession } from "@/provider/session-provider";
+import useMessage from "@/hooks/use-message";
 
 const MIN_HEIGHT = 56;
 
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function ChatInput({ id, close }: Props) {
+  const { message, setMessage } = useMessage();
   const { user } = useSession();
   const { socket } = useWebSocket(); // WebSocket instance
   const [inputValue, setInputValue] = useState<string>("");
@@ -42,12 +44,14 @@ export function ChatInput({ id, close }: Props) {
         media: [],
         chatId: id,
         content: inputValue.trim(),
+        replyToId: message?.id,
       });
       close();
       setInputValue(""); // Reset input
       adjustHeight(true); // Adjust textarea height
+      setMessage(undefined);
     }
-  }, [inputValue, user, socket, id, adjustHeight, close]);
+  }, [inputValue, user, message, socket, id, adjustHeight, close, setMessage]);
 
   // Debounced typing event
   useEffect(() => {

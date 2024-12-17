@@ -207,9 +207,8 @@ const ChatBubbleAction: React.FC<ChatBubbleActionProps> = ({
         className={className}
         onClick={onClick}
         {...props}
-      >
-        {icon}
-      </Button>
+        startContent={icon}
+      />
     </TooltipTrigger>
     <TooltipContent>
       <p>{title}</p>

@@ -26,6 +26,7 @@ import { Label } from "../ui/label";
 import { useWebSocket } from "@/provider/socket-provider";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useSession } from "@/provider/session-provider";
+import useMessage from "@/hooks/use-message";
 
 interface Props {
   id: string;
@@ -163,6 +164,7 @@ function DrawerInput({ onOpenChange, open, id, close }: DialogProps) {
 }
 
 function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
+  const { message ,setMessage} = useMessage();
   const [isPending, setIsPending] = useState(false);
   const { user } = useSession();
   const { startUpload } = useUploadThing("media");
@@ -217,11 +219,13 @@ function FormSendMessage({ onOpenChange, close, id }: DialogProps) {
       media: imageUploaded,
       chatId: id,
       content: content.trim(),
+      replyToId: message?.id,
     });
     setIsPending(false);
     close();
     setContent("");
     onOpenChange(false);
+    setMessage(undefined)
   };
 
   return (

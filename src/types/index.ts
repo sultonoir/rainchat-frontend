@@ -71,6 +71,10 @@ export type Media = {
 
 export type ReplyTo = Message & {
   media: Media[];
+  sender: {
+    name: string;
+    image: string;
+  };
 };
 
 export type Messages = {
