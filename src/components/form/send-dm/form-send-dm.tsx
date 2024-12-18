@@ -5,11 +5,16 @@ import ky from "ky";
 import { Chatlist } from "@/types";
 import { toast } from "sonner";
 import { getGlobalError } from "@/lib/getGlobalError";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMemberDialog } from "@/hooks/user-member-dialog";
+import { EmojiPicker } from "@/components/ui/emoji-picker";
 
-export function FormSendDm({ userId }: { userId: string }) {
+interface Props {
+  userId: string;
+  name: string;
+}
+
+export function FormSendDm({ userId, name }: Props) {
   const { setOpen } = useMemberDialog();
   const { user } = useSession();
   const [message, setMessage] = React.useState("");
@@ -45,7 +50,7 @@ export function FormSendDm({ userId }: { userId: string }) {
             )
           : [data, ...oldData];
       });
-      setOpen(userId,false)
+      setOpen(userId, false);
     },
   });
 
@@ -59,13 +64,24 @@ export function FormSendDm({ userId }: { userId: string }) {
     }
   };
   return (
-    <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
-      <Input
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full flex-1 items-center gap-2 rounded-lg border transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+    >
+      <input
         disabled={isPending}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="send message"
+        placeholder={`Send message to @${name}`}
+        className="bg-transparent p-2 outline-none"
       />
+      <div className="flex-none">
+        <EmojiPicker
+          onChange={(value) => {
+            setMessage(message + value);
+          }}
+        />
+      </div>
       <Button type="submit" className="hidden">
         Clickme
       </Button>

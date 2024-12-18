@@ -13,9 +13,10 @@ import { FormSendDm } from "../form/send-dm/form-send-dm";
 
 interface UserCardProps extends React.HtmlHTMLAttributes<HTMLElement> {
   userId: string;
+  name?: string | null;
 }
 
-export default function UserCard({ userId, className }: UserCardProps) {
+export default function UserCard({ userId, className, name }: UserCardProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
@@ -76,7 +77,7 @@ export default function UserCard({ userId, className }: UserCardProps) {
           </div>
         </div>
         <p className="text-wrap text-sm text-zinc-500">{data?.status}</p>
-        {!isMe && <FormSendDm userId={userId} />}
+        {!isMe && <FormSendDm userId={userId} name={name ?? ""} />}
       </div>
     </div>
   );
