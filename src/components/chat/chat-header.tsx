@@ -7,12 +7,12 @@ import { Search, Users } from "lucide-react";
 import useShow from "@/hooks/use-show";
 import { ChatWithMember } from "@/types";
 import { UserAvatar } from "../user/user-avatar";
-import { Input } from "../ui/input";
 import { SidebarTrigger } from "../sidebar/sidebar-trigger";
 import { useWebSocket } from "@/provider/socket-provider";
 import { fromNow } from "@/lib/from-now";
 import { CustomImage } from "../ui/custom-image";
 import { CopyButton } from "../ui/copy-button";
+import { SearchInput } from "../search/search-input";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
@@ -52,9 +52,9 @@ export const ChatHeader = ({ chat, className }: Props) => {
             </div>
           )}
         </div>
-        <div className="flex flex-none flex-shrink-0 gap-2">
+        <div className="flex flex-none flex-shrink-0 items-center gap-2">
           {/* //!!todo */}
-          <Input placeholder="search..." className="hidden md:flex" />
+          <SearchInput chatId={chat.id} />
           <Button
             size="icon"
             variant="ghost"

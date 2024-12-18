@@ -73,7 +73,7 @@ export function FormSendDm({ userId, name }: Props) {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder={`Send message to @${name}`}
-        className="bg-transparent p-2 outline-none"
+        className="bg-transparent p-2 outline-none placeholder:text-sm"
       />
       <div className="flex-none">
         <EmojiPicker

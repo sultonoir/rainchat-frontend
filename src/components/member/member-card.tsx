@@ -58,7 +58,7 @@ export function MemberCard({ isMobile, member }: Props) {
               {member.name}
             </DrawerDescription>
           </DrawerHeader>
-          <UserCard className="pt-4" userId={member.userId} />
+          <UserCard className="pt-4" userId={member.userId} name={member.name} />
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
@@ -89,7 +89,7 @@ export function MemberCard({ isMobile, member }: Props) {
         className="w-fit rounded-2xl border-none p-0"
         side="right"
       >
-        <UserCard userId={member.userId} />
+        <UserCard userId={member.userId} name={member.name} />
       </PopoverContent>
     </Popover>
   );
