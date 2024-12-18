@@ -14,7 +14,7 @@ export const ChatLayout = ({ chat }: Props) => {
       <ChatHeader chat={chat} />
       <div className="relative flex size-full">
         <ChatBody id={chat.id} />
-        <MemberLayout members={chat.member} />
+        <MemberLayout members={chat.member} isGroup={chat.isGroup} />
       </div>
     </div>
   );

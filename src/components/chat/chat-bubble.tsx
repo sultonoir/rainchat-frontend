@@ -14,7 +14,7 @@ import {
 import { useMediaDialog } from "@/hooks/use-media-dialog";
 
 // ChatBubble
-const chatBubbleVariant = cva("flex gap-2 max-w-xs items-end relative group", {
+const chatBubbleVariant = cva("flex gap-2 items-end relative group", {
   variants: {
     variant: {
       received: "self-start text-start",
@@ -107,7 +107,7 @@ const ChatBubbleMessage = React.forwardRef<
     <div
       className={cn(
         chatBubbleMessageVariants({ variant, layout, className }),
-        "max-w-full whitespace-pre-wrap break-words text-primary-foreground",
+        "max-w-xs whitespace-pre-wrap break-words text-primary-foreground",
       )}
       ref={ref}
       {...props}

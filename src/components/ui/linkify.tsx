@@ -21,7 +21,7 @@ export function LinkifyUrl({ message }: LinkifyProps) {
     <Linkify options={options}>
       <p
         className={cn("", {
-          "text-primary hover:underline": isMatch, // Berikan kelas 'text-primary' hanya jika cocok dengan URL
+          "text-start text-primary hover:underline": isMatch, // Berikan kelas 'text-primary' hanya jika cocok dengan URL
         })}
       >
         {message}

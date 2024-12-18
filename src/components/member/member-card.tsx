@@ -1,11 +1,6 @@
 "use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import UserCard from "../user/user-card";
 import { Member } from "@/types";
 import {
@@ -20,6 +15,12 @@ import {
 } from "@/components/ui/drawer";
 import { UserAvatar } from "../user/user-avatar";
 import { useWebSocket } from "@/provider/socket-provider";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useMemberDialog } from "@/hooks/user-member-dialog";
 
 interface Props {
   isMobile: boolean;
@@ -27,13 +28,18 @@ interface Props {
 }
 
 export function MemberCard({ isMobile, member }: Props) {
-  const [open, setOpen] = React.useState(false);
+  const { openStates, setOpen } = useMemberDialog();
+  const isOpen = openStates[member.userId] ?? false; // Default state is false
   const { onlineUsers } = useWebSocket();
 
   const online = onlineUsers.includes(member.userId);
+
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={setOpen}>
+      <Drawer
+        open={isOpen}
+        onOpenChange={(open) => setOpen(member.userId, open)}
+      >
         <DrawerTrigger asChild>
           <Button variant="ghost" className="h-fit w-full justify-start p-2">
             <UserAvatar online={online} src={member.user.image} />
@@ -49,8 +55,7 @@ export function MemberCard({ isMobile, member }: Props) {
           <DrawerHeader className="sr-only text-left">
             <DrawerTitle>{member.name}</DrawerTitle>
             <DrawerDescription className="sr-only">
-              Make changes to your profile here. Click save when you&apos;re
-              done.
+              {member.name}
             </DrawerDescription>
           </DrawerHeader>
           <UserCard className="pt-4" userId={member.userId} />
@@ -65,8 +70,11 @@ export function MemberCard({ isMobile, member }: Props) {
   }
 
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
+    <Popover
+      open={isOpen}
+      onOpenChange={(open) => setOpen(member.userId, open)}
+    >
+      <PopoverTrigger asChild>
         <Button variant="ghost" className="h-fit w-full justify-start p-2">
           <UserAvatar online={online} src={member.user.image} />
           <div className="flex flex-col">
@@ -76,13 +84,13 @@ export function MemberCard({ isMobile, member }: Props) {
             </p>
           </div>
         </Button>
-      </HoverCardTrigger>
-      <HoverCardContent
-        className="w-[300px] rounded-2xl border-none p-0"
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-fit rounded-2xl border-none p-0"
         side="right"
       >
         <UserCard userId={member.userId} />
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   );
 }

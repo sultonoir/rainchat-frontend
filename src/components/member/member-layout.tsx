@@ -12,9 +12,10 @@ import { useWebSocket } from "@/provider/socket-provider";
 
 interface Props {
   members: Member[];
+  isGroup: boolean;
 }
 
-export const MemberLayout = ({ members }: Props) => {
+export const MemberLayout = ({ members, isGroup }: Props) => {
   const [value, setValue] = React.useState("");
   const { onlineUsers } = useWebSocket();
   const isMobile = useIsMobile();
@@ -61,12 +62,13 @@ export const MemberLayout = ({ members }: Props) => {
     },
   };
 
+  const open = isGroup && show;
   return (
     <AnimatePresence>
       <motion.div
         key="sidebar"
         initial="closed"
-        animate={show ? "open" : "closed"}
+        animate={open ? "open" : "closed"}
         exit="closed"
         variants={sidebarVariants}
         className={cn("border-border/50 lg:border-l", {
