@@ -94,7 +94,7 @@ export const SearchInput = ({ chatId }: Props) => {
       <AnimatePresence>
         {isOpen && (
           <SearchResults
-            results={searchResults}
+            messages={searchResults}
             loading={isLoading}
             close={() => setIsOpen(false)}
           />

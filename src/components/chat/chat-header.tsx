@@ -13,12 +13,14 @@ import { fromNow } from "@/lib/from-now";
 import { CustomImage } from "../ui/custom-image";
 import { CopyButton } from "../ui/copy-button";
 import { SearchInput } from "../search/search-input";
+import { useSeacrch } from "@/hooks/use-search-dialog";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
 }
 
 export const ChatHeader = ({ chat, className }: Props) => {
+  const { setOpen } = useSeacrch();
   const { setShow } = useShow();
   const { onlineUsers } = useWebSocket();
   const online = onlineUsers.includes(chat.userId ?? "");
@@ -59,6 +61,7 @@ export const ChatHeader = ({ chat, className }: Props) => {
             size="icon"
             variant="ghost"
             className="rounded-full hover:bg-primary/10 hover:text-primary md:hidden"
+            onClick={() => setOpen(chat.id, true)}
           >
             <Search />
           </Button>

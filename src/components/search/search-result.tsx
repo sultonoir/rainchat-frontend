@@ -7,37 +7,52 @@ import useMessage from "@/hooks/use-message";
 import { Button } from "../ui/button";
 import { Reply } from "lucide-react";
 import { ChatListLoader } from "../chat/chat-list-loader";
+import React from "react";
+import { cn } from "@/lib/utils";
 
-export const SearchResults = ({
-  results,
-  loading,
-  close,
-}: {
-  results: Messages[] | undefined;
+interface SearchResultProp extends React.HtmlHTMLAttributes<HTMLDivElement> {
+  container?: React.HTMLAttributes<HTMLDivElement>;
+  messages: Messages[] | undefined;
   loading: boolean;
   close: () => void;
-}) => (
+}
+
+export const SearchResults = ({
+  messages,
+  container,
+  loading,
+  close,
+  className,
+}: SearchResultProp) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: 8 }}
     transition={{ duration: 0.15 }}
-    className="absolute z-50 mt-2 w-full overflow-hidden rounded-lg bg-secondary p-3 shadow-lg"
+    className={cn(
+      "absolute z-50 mt-2 w-full overflow-hidden rounded-lg bg-secondary p-3 shadow-lg",
+      container?.className,
+    )}
   >
-    <div className="flex max-h-72 w-full flex-col divide-y overflow-y-auto">
+    <div
+      className={cn(
+        "flex max-h-72 w-full flex-col divide-y overflow-y-auto",
+        className,
+      )}
+    >
       {loading ? (
         <ChatListLoader />
       ) : (
         <>
-          {!results ? (
+          {!messages ? (
             <div>Search chat</div>
           ) : (
             <>
-              {results.length === 0 ? (
+              {messages.length === 0 ? (
                 <div className="p-3 text-sm">Message not found</div>
               ) : (
                 <>
-                  {results?.map((item) => (
+                  {messages?.map((item) => (
                     <SeachCard message={item} key={item.id} close={close} />
                   ))}
                 </>
@@ -50,27 +65,29 @@ export const SearchResults = ({
   </motion.div>
 );
 
-function SeachCard({
-  message,
-  close,
-}: {
+interface SeachCardProps extends React.HTMLAttributes<HTMLDivElement> {
   message: Messages;
   close: () => void;
-}) {
+}
+
+function SeachCard({ message, close }: SeachCardProps) {
   const { setMessage } = useMessage();
   const handleReply = () => {
     setMessage(message);
     close();
   };
   return (
-    <div className="flex gap-4 py-2 pr-2 first:pt-0 last:pb-0" key={message.id}>
+    <div
+      className="flex w-full gap-4 py-2 pr-2 first:pt-0 last:pb-0"
+      key={message.id}
+    >
       <CustomImage src={message.sender.image} />
-      <div className="max-w-xs flex-1 space-y-1">
+      <div className="flex-1">
         <div className="flex items-center gap-2">
           <p className="font-semibold capitalize leading-none">
             {message.sender.name}
           </p>
-          <p className="text-muted-foreground">|</p>
+          <p className="leading-none text-muted-foreground">-</p>
           <p className="text-xs text-muted-foreground">
             {fromNow(new Date(message.createdAt))}
           </p>
@@ -82,7 +99,7 @@ function SeachCard({
             alt="image"
             width={100}
             height={200}
-            className="rounded-lg object-cover"
+            className="mt-2 rounded-lg object-cover"
           />
         )}
       </div>

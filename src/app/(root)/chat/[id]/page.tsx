@@ -1,4 +1,5 @@
 import { ChatLayout } from "@/components/chat/chat-layout";
+import { SearchMobile } from "@/components/search/search-mobile";
 import { getChatById } from "@/server/routes/chat/chat.service";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -26,7 +27,12 @@ const Page = async ({ params }: { params: Params }) => {
     return notFound();
   }
 
-  return <ChatLayout chat={chat} />;
+  return (
+    <>
+      <ChatLayout chat={chat} />
+      <SearchMobile chatId={id} />
+    </>
+  );
 };
 
 export default Page;

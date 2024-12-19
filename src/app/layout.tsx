@@ -26,7 +26,7 @@ export default async function RootLayout({
   const user = await getSession();
   return (
     <html lang="en" suppressHydrationWarning className={inter.className}>
-      <body className="dark overflow-hidden">
+      <body className="dark">
         <Provider user={user}>{children}</Provider>
       </body>
     </html>
