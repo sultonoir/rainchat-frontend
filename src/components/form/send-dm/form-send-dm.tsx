@@ -8,6 +8,7 @@ import { getGlobalError } from "@/lib/getGlobalError";
 import { Button } from "@/components/ui/button";
 import { useMemberDialog } from "@/hooks/user-member-dialog";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
+import { useWebSocket } from "@/provider/socket-provider";
 
 interface Props {
   userId: string;
@@ -15,10 +16,59 @@ interface Props {
 }
 
 export function FormSendDm({ userId, name }: Props) {
+  const { socket } = useWebSocket();
   const { setOpen } = useMemberDialog();
   const { user } = useSession();
   const [message, setMessage] = React.useState("");
   const ctx = useQueryClient();
+
+  const updateMessage = React.useCallback(
+    (data: Chatlist) => {
+      if (data.userId !== user?.id) {
+        try {
+          const audio = new Audio("/ring.mp3");
+          audio.play();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
+        if (!oldData) return [];
+
+        const exist = oldData.some((o) => o.id === data.id);
+        return exist
+          ? oldData.map((item) =>
+              item.id === data.id
+                ? {
+                    ...item,
+                    lastMessage: data.lastMessage,
+                    lastSent: data.lastSent,
+                  }
+                : item,
+            )
+          : [data, ...oldData];
+      });
+    },
+    [ctx, user],
+  );
+
+  React.useEffect(() => {
+    if (!socket) return;
+
+    const handleSendMessage = (data: Chatlist) => {
+      console.log(data);
+      updateMessage(data); // Fungsi untuk memperbarui data React Query
+    };
+
+    // Tambahkan listener untuk event "sendMessage"
+    socket.on("sendDm", handleSendMessage);
+
+    // Cleanup: hapus listener dan reset grup saat komponen unmount
+    return () => {
+      socket.off("sendDm", handleSendMessage);
+    };
+  }, [socket, updateMessage]);
+
   const { mutateAsync, isPending } = useMutation({
     mutationKey: ["send-dm"],
     mutationFn: async () => {
@@ -36,20 +86,7 @@ export function FormSendDm({ userId, name }: Props) {
     onError(error) {
       toast.error(error.message);
     },
-    onSuccess(data) {
-      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
-        if (!oldData) {
-          return [data];
-        }
-
-        const exist = oldData.some((o) => o.id === data?.id);
-
-        return exist
-          ? oldData.map((item) =>
-              item.id === data?.id ? { ...item, ...data } : item,
-            )
-          : [data, ...oldData];
-      });
+    onSuccess() {
       setOpen(userId, false);
     },
   });

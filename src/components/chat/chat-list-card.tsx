@@ -18,20 +18,31 @@ import {
 import { Table2Icon } from "lucide-react";
 import { OutGroup } from "./chat-out-group";
 import { RemoveChatlist } from "./chat-remove";
+import { useSession } from "@/provider/session-provider";
 
 interface Props {
   chat: Chatlist;
 }
 
 export const ChatListCard = ({ chat }: Props) => {
+  const { user } = useSession();
   const { onlineUsers, socket } = useWebSocket();
   const online = onlineUsers.includes(chat.userId ?? "");
   const isMobile = useIsMobile();
   const { toggle } = useSidebar();
   const ctx = useQueryClient();
+  const hasJoinedGroup = React.useRef(new Set<string>());
 
   const updateMessage = React.useCallback(
     (data: Messages) => {
+      if (data.senderId !== user?.id) {
+        try {
+          const audio = new Audio("/ring.mp3");
+          audio.play();
+        } catch (error) {
+          console.log(error);
+        }
+      }
       ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
         if (!oldData) return [];
         const lastMessage = data.content;
@@ -56,7 +67,7 @@ export const ChatListCard = ({ chat }: Props) => {
           return {
             ...oldData,
             pages: oldData.pages.map((page, index) =>
-              index === oldData.pages.length - 1
+              index === oldData.pages.length - 1 && chat.id === data.chatId
                 ? { ...page, messages: [...page.messages, data] }
                 : page,
             ),
@@ -64,9 +75,8 @@ export const ChatListCard = ({ chat }: Props) => {
         },
       );
     },
-    [chat.id, ctx],
+    [chat.id, ctx, user],
   );
-  const hasJoinedGroup = React.useRef(new Set<string>());
 
   React.useEffect(() => {
     if (!socket) return;
