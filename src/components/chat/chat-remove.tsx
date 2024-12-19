@@ -11,9 +11,7 @@ export function RemoveChatlist({ chatId }: { chatId: string }) {
     mutationKey: ["remove-chatlist"],
     mutationFn: async () => {
       try {
-        return await ky
-          .delete(`/v1/chat/chatlist/${chatId}`)
-          .json<{ chatId: string }>();
+        return await ky.delete(`/v1/dm/${chatId}`).json<{ chatId: string }>();
       } catch (error) {
         const message = await getGlobalError(error);
         throw new Error(message);

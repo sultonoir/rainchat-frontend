@@ -34,12 +34,14 @@ export const ChatListCard = ({ chat }: Props) => {
     (data: Messages) => {
       ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
         if (!oldData) return [];
-
+        const lastMessage = data.content;
+        const sender = data.sender.name;
+        const lastMedia = data.media?.length > 0 ? "Send images" : "";
         return oldData.map((item) =>
           item.id === data.chatId
             ? {
                 ...item,
-                lastMessage: data.content ?? "",
+                lastMessage: `${sender} : ${lastMedia || lastMessage || ""}`,
                 lastSent: data.createdAt,
               }
             : item,
@@ -131,6 +133,7 @@ export const ChatListCard = ({ chat }: Props) => {
             onClick={handleClicked}
             href={`/chat/${chat.id}`}
             target="_blank"
+            rel="noopener noreferrer"
           >
             <Table2Icon size={20} className="text-muted-foreground" />
             Open link in the new tab
