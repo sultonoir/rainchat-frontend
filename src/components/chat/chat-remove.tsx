@@ -4,9 +4,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ky from "ky";
 import { ContextMenuItem } from "../ui/context-menu";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function RemoveChatlist({ chatId }: { chatId: string }) {
   const ctx = useQueryClient();
+  const router = useRouter();
   const { mutate } = useMutation({
     mutationKey: ["remove-chatlist"],
     mutationFn: async () => {
@@ -23,6 +25,7 @@ export function RemoveChatlist({ chatId }: { chatId: string }) {
 
         return oldData.filter((d) => d.id !== data.chatId);
       });
+      router.replace("/");
     },
   });
 

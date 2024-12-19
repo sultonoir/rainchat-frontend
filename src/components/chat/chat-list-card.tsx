@@ -67,7 +67,7 @@ export const ChatListCard = ({ chat }: Props) => {
           return {
             ...oldData,
             pages: oldData.pages.map((page, index) =>
-              index === oldData.pages.length - 1 && chat.id === data.chatId
+              index === oldData.pages.length - 1
                 ? { ...page, messages: [...page.messages, data] }
                 : page,
             ),
@@ -89,7 +89,9 @@ export const ChatListCard = ({ chat }: Props) => {
     }
 
     const handleSendMessage = (data: Messages) => {
-      updateMessage(data); // Fungsi untuk memperbarui data React Query
+      if (chat.id === data.chatId) {
+        updateMessage(data); // Fungsi untuk memperbarui data React Query
+      }
     };
 
     // Tambahkan listener untuk event "sendMessage"

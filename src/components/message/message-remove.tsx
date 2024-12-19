@@ -1,36 +1,35 @@
-import { getGlobalError } from "@/lib/getGlobalError";
-import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
-import {
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import ky from "ky";
-import { Messages, MessagesPage } from "@/types";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { Chatlist, Messages, MessagesPage } from "@/types";
 import { ChatBubbleAction } from "../chat/chat-bubble";
+import { useWebSocket } from "@/provider/socket-provider";
+import React from "react";
+import { useSession } from "@/provider/session-provider";
+
+interface DataRemove {
+  chatId: string;
+  messageId: string;
+}
 
 export function RemoveMessage({ message }: { message: Messages }) {
+  const { socket } = useWebSocket();
+  const { user } = useSession();
   const ctx = useQueryClient();
 
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["remove-message"],
-    mutationFn: async () => {
-      try {
-        return ky
-          .delete("/v1/chat/message", {
-            json: {
-              chatId: message.chatId,
-              messageId: message.id,
-            },
-          })
-          .json<string>();
-      } catch (error) {
-        const message = await getGlobalError(error);
-        throw new Error(message);
-      }
-    },
-    onSuccess(data) {
+  const updateMessage = React.useCallback(
+    (data: DataRemove) => {
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
+        if (!oldData) return [];
+        return oldData.map((item) =>
+          item.id === data.chatId
+            ? {
+                ...item,
+                lastMessage: `${user?.name} : remove message`,
+                lastSent: new Date(),
+              }
+            : item,
+        );
+      });
       ctx.setQueryData<InfiniteData<MessagesPage>>(
         ["message-list", message.chatId],
         (oldData) => {
@@ -41,25 +40,50 @@ export function RemoveMessage({ message }: { message: Messages }) {
             pages: oldData.pages.map((page) => {
               return {
                 ...page,
-                messages: page.messages.filter((m) => m.id !== data),
+                messages: page.messages.filter((m) => m.id !== data.messageId),
               };
             }),
           };
         },
       );
     },
-    onError(error) {
-      toast.error(error.message);
-    },
-  });
+    [ctx, message.chatId, user?.name],
+  );
+
+  React.useEffect(() => {
+    if (!socket) return;
+
+    const handleSendMessage = (data: DataRemove) => {
+      console.log(data);
+      if (message.id === data.messageId) {
+        updateMessage(data); // Fungsi untuk memperbarui data React Query
+      }
+    };
+
+    socket.on("remove-message", handleSendMessage);
+
+    return () => {
+      socket.off("remove-message", handleSendMessage);
+    };
+  }, [message.id, socket, updateMessage]);
+
+  const handleRemove = () => {
+    if (socket && user) {
+      const data = {
+        chatId: message.chatId,
+        messageId: message.id,
+        userId: user.id,
+      };
+      socket.emit("remove-message", data);
+    }
+  };
+
   return (
     <ChatBubbleAction
       className="size-7"
       title="Delete"
-      disabled={isPending}
-      loading={isPending}
       icon={<Trash2 className="size-4" />}
-      onClick={() => mutate()}
+      onClick={handleRemove}
     />
   );
 }

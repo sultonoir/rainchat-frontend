@@ -24,6 +24,7 @@ export type Chatlist = {
   lastSent: Date;
   isGroup: boolean;
   userId?: string;
+  senderId?: string;
 };
 
 export type Member = {

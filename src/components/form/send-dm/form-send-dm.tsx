@@ -24,7 +24,7 @@ export function FormSendDm({ userId, name }: Props) {
 
   const updateMessage = React.useCallback(
     (data: Chatlist) => {
-      if (data.userId !== user?.id) {
+      if (data.senderId !== user?.id) {
         try {
           const audio = new Audio("/ring.mp3");
           audio.play();
@@ -56,7 +56,6 @@ export function FormSendDm({ userId, name }: Props) {
     if (!socket) return;
 
     const handleSendMessage = (data: Chatlist) => {
-      console.log(data);
       updateMessage(data); // Fungsi untuk memperbarui data React Query
     };
 
