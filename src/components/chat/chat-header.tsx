@@ -9,11 +9,11 @@ import { ChatWithMember } from "@/types";
 import { UserAvatar } from "../user/user-avatar";
 import { SidebarTrigger } from "../sidebar/sidebar-trigger";
 import { useWebSocket } from "@/provider/socket-provider";
-import { fromNow } from "@/lib/from-now";
 import { CustomImage } from "../ui/custom-image";
 import { CopyButton } from "../ui/copy-button";
 import { SearchInput } from "../search/search-input";
 import { useSeacrch } from "@/hooks/use-search-dialog";
+import { LastOnline } from "../ui/last-online";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
@@ -46,9 +46,7 @@ export const ChatHeader = ({ chat, className }: Props) => {
                 {online ? (
                   <p className="text-xs text-muted-foreground">Online</p>
                 ) : (
-                  <p className="text-xs text-muted-foreground">
-                    {fromNow(new Date(chat.lastOnline ?? new Date()))}
-                  </p>
+                  <LastOnline last={new Date(chat.lastOnline ?? new Date())} />
                 )}
               </div>
             </div>

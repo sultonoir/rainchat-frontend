@@ -54,10 +54,7 @@ export function RemoveMessage({ message }: { message: Messages }) {
     if (!socket) return;
 
     const handleSendMessage = (data: DataRemove) => {
-      console.log(data);
-      if (message.id === data.messageId) {
-        updateMessage(data); // Fungsi untuk memperbarui data React Query
-      }
+      updateMessage(data);
     };
 
     socket.on("remove-message", handleSendMessage);
@@ -65,9 +62,9 @@ export function RemoveMessage({ message }: { message: Messages }) {
     return () => {
       socket.off("remove-message", handleSendMessage);
     };
-  }, [message.id, socket, updateMessage]);
+  }, [message, socket, updateMessage]);
 
-  const handleRemove = () => {
+  const handleRemove = React.useCallback(() => {
     if (socket && user) {
       const data = {
         chatId: message.chatId,
@@ -76,7 +73,7 @@ export function RemoveMessage({ message }: { message: Messages }) {
       };
       socket.emit("remove-message", data);
     }
-  };
+  }, [message.chatId, message.id, socket, user]);
 
   return (
     <ChatBubbleAction
