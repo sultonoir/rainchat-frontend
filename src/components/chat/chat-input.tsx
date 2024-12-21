@@ -77,6 +77,17 @@ export function ChatInput({ id, close }: Props) {
     adjustHeight();
   };
 
+  const handleFocus = () => {
+    if (textareaRef.current) {
+      textareaRef.current.focus(); // Fokus pada textarea
+      window.scrollTo({
+        top: textareaRef.current.getBoundingClientRect().top + window.scrollY,
+        behavior: "smooth", // Gulir ke elemen secara halus
+      });
+    }
+  };
+
+
   return (
     <div className="flex w-full items-end gap-2">
       {/* File input component */}
@@ -101,6 +112,7 @@ export function ChatInput({ id, close }: Props) {
         value={inputValue}
         onKeyDown={handleKeyDown}
         onChange={handleInputChange}
+        onFocus={handleFocus}
       />
 
       <Button

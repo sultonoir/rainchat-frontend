@@ -1,55 +1,28 @@
 "use client";
 
-import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import ky from "ky";
-import { MessagesPage } from "@/types";
+import React, { useRef, useEffect, useCallback } from "react";
 import { ChatMessageList } from "./chat-message-list";
 import { ChatFooter } from "./chat-footer";
 import { ChatListLoader } from "./chat-list-loader";
 import { ChatListEmpty } from "./chat-list-empty";
 import { MessageContent } from "../message/message-content";
+import { useChatMessages } from "@/hooks/use-chat-message";
 
 interface Props {
   id: string;
 }
 
-const useChatMessages = (chatId: string) => {
-  const { data, fetchNextPage, status, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: ["message-list", chatId],
-      queryFn: ({ pageParam }) =>
-        ky
-          .get(`/v1/chat/${chatId}/message`, {
-            searchParams: pageParam ? { cursor: pageParam } : undefined,
-          })
-          .json<MessagesPage>(),
-      initialPageParam: null as string | null,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      select: (data) => ({
-        pages: [...data.pages].reverse(),
-        pageParams: [...data.pageParams].reverse(),
-      }),
-    });
-
-  const messages = useMemo(
-    () =>
-      data?.pages
-        .flatMap((page) => page.messages)
-        .sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-        ) ?? [],
-    [data],
-  );
-
-  return { messages, fetchNextPage, hasNextPage, isFetchingNextPage, status };
-};
-
 export const ChatBody = ({ id }: Props) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { messages, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useChatMessages(id);
+  const {
+    messages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    pageParam,
+  } = useChatMessages(id);
+
 
   // Helper: Scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -65,14 +38,19 @@ export const ChatBody = ({ id }: Props) => {
     if (!container || isFetchingNextPage) return;
 
     const { scrollHeight, scrollTop } = container;
-    if (messages.length === 0) {
-      scrollToBottom();
+
+    if (!pageParam) {
+      const timeout = setTimeout(() => {
+        scrollToBottom();
+      }, 100); // Set timeout selama 500ms (atau sesuaikan sesuai kebutuhan)
+      return () => clearTimeout(timeout); // Membersihkan timeout jika dependency berubah
     }
+
     if (messages.length > 1 && !isFetchingNextPage) {
       container.scrollTop =
-        container.scrollHeight - scrollHeight + scrollTop + 800;
+        container.scrollHeight - scrollHeight + scrollTop + 500;
     }
-  }, [messages, isFetchingNextPage, scrollToBottom]);
+  }, [messages, pageParam, isFetchingNextPage, scrollToBottom]);
 
   // Fetch more data when scrolled to the top
   useEffect(() => {

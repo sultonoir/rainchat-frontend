@@ -160,8 +160,8 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
           src={media.at(0)?.value ?? "/avatar.png"}
           alt="image"
           width={200}
-          height={200}
-          className="size-full rounded-lg object-cover"
+          height={300}
+          className="rounded-lg object-cover"
           onClick={() => {
             setMedia(media.at(0)?.value);
             setShow(true);
@@ -169,7 +169,7 @@ const ChatBubbleGalery: React.FC<ChatBubbleGaleryProps> = ({
           priority
         />
       ) : (
-        <div className="grid size-64 grid-cols-2 gap-1 rounded-2xl">
+        <div className="grid size-56 grid-cols-2 gap-1 rounded-2xl">
           {media.map((m) => (
             <div
               className={cn(
@@ -242,10 +242,10 @@ const ChatBubbleActionWrapper = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "absolute bottom-1 left-1/2 flex -translate-x-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:top-1/2 sm:-translate-y-1/2",
+      "absolute bottom-1 left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
       variant === "sent"
-        ? "-translate-x-full flex-row-reverse sm:-left-1"
-        : "translate-x-full sm:-right-1",
+        ? "-left-1 -translate-x-full flex-row-reverse"
+        : "-right-1 translate-x-full",
       className,
     )}
     {...props}
