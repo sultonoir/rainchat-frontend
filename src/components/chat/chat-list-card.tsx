@@ -1,4 +1,4 @@
-import { Chatlist, Messages, MessagesPage } from "@/types";
+import { Chatlist } from "@/types";
 import React from "react";
 import { useWebSocket } from "@/provider/socket-provider";
 import { UserAvatar } from "../user/user-avatar";
@@ -6,7 +6,6 @@ import { fromNow } from "@/lib/from-now";
 import Link from "next/link";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { CustomImage } from "../ui/custom-image";
 import {
   ContextMenu,
@@ -18,65 +17,17 @@ import {
 import { Table2Icon } from "lucide-react";
 import { OutGroup } from "./chat-out-group";
 import { RemoveChatlist } from "./chat-remove";
-import { useSession } from "@/provider/session-provider";
 
 interface Props {
   chat: Chatlist;
 }
 
 export const ChatListCard = ({ chat }: Props) => {
-  const { user } = useSession();
   const { onlineUsers, socket } = useWebSocket();
   const online = onlineUsers.includes(chat.userId ?? "");
   const isMobile = useIsMobile();
   const { toggle } = useSidebar();
-  const ctx = useQueryClient();
   const hasJoinedGroup = React.useRef(new Set<string>());
-
-  const updateMessage = React.useCallback(
-    (data: Messages) => {
-      if (data.senderId !== user?.id) {
-        try {
-          const audio = new Audio("/ring.mp3");
-          audio.play();
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
-        if (!oldData) return [];
-        const lastMessage = data.content;
-        const sender = data.sender.name;
-        const lastMedia = data.media?.length > 0 ? "Send images" : "";
-        return oldData.map((item) =>
-          item.id === data.chatId
-            ? {
-                ...item,
-                lastMessage: `${sender} : ${lastMedia || lastMessage || ""}`,
-                lastSent: data.createdAt,
-              }
-            : item,
-        );
-      });
-
-      ctx.setQueryData<InfiniteData<MessagesPage>>(
-        ["message-list", chat.id],
-        (oldData) => {
-          if (!oldData) return { pages: [], pageParams: [] };
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === oldData.pages.length - 1
-                ? { ...page, messages: [...page.messages, data] }
-                : page,
-            ),
-          };
-        },
-      );
-    },
-    [chat.id, ctx, user],
-  );
 
   React.useEffect(() => {
     if (!socket) return;
@@ -87,21 +38,7 @@ export const ChatListCard = ({ chat }: Props) => {
       socket.emit("join group", chat.id); // Emit hanya sekali untuk tiap chat.id
       hasJoinedGroup.current.add(chat.id);
     }
-
-    const handleSendMessage = (data: Messages) => {
-      if (chat.id === data.chatId) {
-        updateMessage(data); // Fungsi untuk memperbarui data React Query
-      }
-    };
-
-    // Tambahkan listener untuk event "sendMessage"
-    socket.on("sendMessage", handleSendMessage);
-
-    // Cleanup: hapus listener dan reset grup saat komponen unmount
-    return () => {
-      socket.off("sendMessage", handleSendMessage);
-    };
-  }, [chat.id, socket, updateMessage]);
+  }, [chat.id, socket]);
 
   const handleClicked = () => {
     if (isMobile) {

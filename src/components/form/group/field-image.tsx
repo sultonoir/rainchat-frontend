@@ -1,10 +1,19 @@
 "use client";
 
 import React from "react";
-import { useDropzone } from "react-dropzone";
+import { FileWithPath, useDropzone } from "react-dropzone";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { stringToFile } from "@/lib/stringToFile";
+import { ImageCropper } from "@/components/ui/image-cropper";
+
+export type FileWithPreview = FileWithPath & {
+  preview: string;
+};
+
+const accept = {
+  "image/*": [],
+};
 
 interface FieldImageProps {
   images: File[];
@@ -12,6 +21,15 @@ interface FieldImageProps {
 }
 
 export default function FieldImage({ setImages, images }: FieldImageProps) {
+  const [selectedFile, setSelectedFile] =
+    React.useState<FileWithPreview | null>(null);
+  const [isDialogOpen, setDialogOpen] = React.useState(false);
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    const file = stringToFile(croppedImageUrl, "");
+    setImages([file])
+  };
+
   const onDrop = React.useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length === 0) {
@@ -24,6 +42,12 @@ export default function FieldImage({ setImages, images }: FieldImageProps) {
         return;
       }
 
+      const fileWithPreview = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+
+      setSelectedFile(fileWithPreview);
+      setDialogOpen(true);
       setImages([file]); // Tetap set dalam array untuk konsistensi
     },
     [setImages],
@@ -31,26 +55,21 @@ export default function FieldImage({ setImages, images }: FieldImageProps) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    accept,
   });
 
   return (
     <div className="space-y-4">
       {images.length > 0 ? (
-        <Avatar
-          {...getRootProps()}
-          className="mx-auto size-36 cursor-pointer ring-2 ring-slate-200 ring-offset-2"
-        >
-          <input type="file" accept="image/*" {...getInputProps()} />
-          {images.map((item) => (
-            <AvatarImage
-              src={URL.createObjectURL(item)}
-              alt="@shadcn"
-              key={item.name}
-              className="object-cover"
-            />
-          ))}
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <div className="flex items-center justify-center">
+          <ImageCropper
+            dialogOpen={isDialogOpen}
+            setDialogOpen={setDialogOpen}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+            handleCropComplete={handleCropComplete} // Pass the callback to ImageCropper
+          />
+        </div>
       ) : (
         <div
           {...getRootProps()}

@@ -69,7 +69,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
   const ctx = useQueryClient();
 
-  const updateMessage = React.useCallback(
+  const updateMessageDm = React.useCallback(
     (data: SendDm) => {
       if (data.message.senderId !== user?.id) {
         // Gunakan Notification API
@@ -93,8 +93,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
       const member = data.chatlist.member?.find((item) => item.id !== user?.id);
 
-      console.log({ member });
-
       ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
         if (!oldData) return [];
 
@@ -105,7 +103,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
               item.id === data.chatlist.chatId
                 ? {
                     ...item,
-                    lastMessage: data.message.content ?? "",
+                    lastMessage: `${data.message.sender.name} : ${data.message.content}`,
                     lastSent: new Date(),
                   } // Update lastMessage dan lastSent
                 : item,
@@ -115,7 +113,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 id: data.chatlist.chatId,
                 name: member?.name ?? "",
                 image: member?.image ?? "",
-                lastMessage: data.message.content ?? "",
+                lastMessage: `${data.message.sender.name} : ${data.message.content}`,
                 unreadCount: 1, // Mengasumsikan chat baru
                 lastSent: new Date(),
                 isGroup: false,
@@ -135,6 +133,51 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             pages: oldData.pages.map((page, index) =>
               index === oldData.pages.length - 1
                 ? { ...page, messages: [...page.messages, data.message] }
+                : page,
+            ),
+          };
+        },
+      );
+    },
+    [ctx, user],
+  );
+
+  const updateMessage = React.useCallback(
+    (data: Messages) => {
+      if (data.senderId !== user?.id) {
+        try {
+          const audio = new Audio("/ring.mp3");
+          audio.play();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
+        if (!oldData) return [];
+        const lastMessage = data.content;
+        const sender = data.sender.name;
+        const lastMedia = data.media?.length > 0 ? "Send images" : "";
+        return oldData.map((item) =>
+          item.id === data.chatId
+            ? {
+                ...item,
+                lastMessage: `${sender} : ${lastMedia || lastMessage || ""}`,
+                lastSent: data.createdAt,
+              }
+            : item,
+        );
+      });
+
+      ctx.setQueryData<InfiniteData<MessagesPage>>(
+        ["message-list", data.chatId],
+        (oldData) => {
+          if (!oldData) return { pages: [], pageParams: [] };
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page, index) =>
+              index === oldData.pages.length - 1
+                ? { ...page, messages: [...page.messages, data] }
                 : page,
             ),
           };
@@ -164,14 +207,20 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       setOnlineUsers(users);
     });
 
-    const handleSendMessage = (data: SendDm) => {
+    const handleSendDM = (data: SendDm) => {
       if (data.chatlist.member?.some((item) => item.id === user.id)) {
-        updateMessage(data);
+        updateMessageDm(data);
+        newSocket.emit("join group", data.chatlist.chatId);
       }
     };
 
+    const handleSendChatGroup = (data: Messages) => {
+      updateMessage(data);
+    };
+
+    newSocket.on("sendMessage", handleSendChatGroup);
     // Tambahkan listener untuk event "sendDm"
-    newSocket.on("sendDm", handleSendMessage);
+    newSocket.on("sendDm", handleSendDM);
 
     newSocket.on("disconnect", () => {
       setConnected(false);
@@ -184,7 +233,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     return () => {
       newSocket.disconnect();
     };
-  }, [updateMessage, user]); // Kosongkan array dependencies agar hanya dijalankan sekali saat mount
+  }, [updateMessage, updateMessageDm, user]); // Kosongkan array dependencies agar hanya dijalankan sekali saat mount
 
   return (
     <WebSocketContext.Provider value={{ socket, connected, onlineUsers }}>

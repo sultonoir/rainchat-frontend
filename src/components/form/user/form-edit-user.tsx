@@ -37,6 +37,7 @@ const schema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   images: z.array(z.instanceof(File)),
   baner: z.array(z.instanceof(File)),
+  status: z.string(),
 });
 
 export function FormEditUser() {
@@ -50,6 +51,7 @@ export function FormEditUser() {
       name: user?.name ?? "",
       images: [],
       baner: [],
+      status: "",
     },
   });
 
@@ -61,6 +63,7 @@ export function FormEditUser() {
       name: string;
       image?: string;
       baner?: string;
+      status?: string;
     }) => ky.patch("/v1/user/", { json: data }).json(),
     onError: async (error) => {
       const message = await getGlobalError(error);
@@ -91,7 +94,9 @@ export function FormEditUser() {
     const baner =
       data.baner.length > 0 ? await uploadFiles(data.baner) : undefined;
 
-    mutate({ name: data.name, image, baner });
+    const status = data.status !== "" ? data.status : undefined;
+
+    mutate({ name: data.name, image, baner, status });
   };
 
   return (
@@ -150,6 +155,19 @@ export function FormEditUser() {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <Input placeholder="status" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

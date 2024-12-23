@@ -14,7 +14,7 @@ export function OutGroup({ chatId }: { chatId: string }) {
     mutationFn: async () => {
       try {
         return await ky
-          .post(`/v1/group/out`, {
+          .delete(`/v1/group/out`, {
             json: { chatId },
           })
           .json<{ chatId: string }>();

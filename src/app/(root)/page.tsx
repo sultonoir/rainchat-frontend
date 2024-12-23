@@ -1,4 +1,4 @@
-import { ChatListEmpty } from "@/components/chat/chat-list-empty";
+import { DemoCrop } from "@/components/ui/demo-crop";
 import { Metadata } from "next";
 import React from "react";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const Page = () => {
   return (
     <div className="grid min-h-screen place-items-center">
-      <ChatListEmpty />
+      <DemoCrop />
     </div>
   );
 };
