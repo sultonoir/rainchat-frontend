@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 import Linkify from "linkify-react";
 
-interface LinkifyProps {
+interface LinkifyProps extends React.HTMLAttributes<HTMLElement> {
   message: string;
 }
 
-export function LinkifyUrl({ message }: LinkifyProps) {
+export function LinkifyUrl({ message, className }: LinkifyProps) {
   const options = {
     formatHref: (href: string) => href.replace(/^https?:/, ""),
   };
@@ -20,8 +20,8 @@ export function LinkifyUrl({ message }: LinkifyProps) {
   return (
     <Linkify options={options}>
       <p
-        className={cn("", {
-          "text-start text-primary hover:underline": isMatch, // Berikan kelas 'text-primary' hanya jika cocok dengan URL
+        className={cn("", className, {
+          "text-start text-primary hover:underline": isMatch,
         })}
       >
         {message}

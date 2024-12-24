@@ -111,3 +111,14 @@ export type User = {
   baner: string;
   status: string | null;
 };
+
+export type Group = {
+  name: string;
+  image: string;
+  id: string;
+  isGroup: boolean;
+  invitedCode: string;
+  createdAt: Date;
+  updatedAt: Date;
+  desc: string;
+};

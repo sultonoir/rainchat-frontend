@@ -14,16 +14,20 @@ import { CopyButton } from "../ui/copy-button";
 import { SearchInput } from "../search/search-input";
 import { useSeacrch } from "@/hooks/use-search-dialog";
 import { LastOnline } from "../ui/last-online";
+import { useSession } from "@/provider/session-provider";
+import { FormEditGroup } from "../form/group/form-edit-group";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   chat: ChatWithMember;
 }
 
 export const ChatHeader = ({ chat, className }: Props) => {
+  const { user } = useSession();
   const { setOpen } = useSeacrch();
   const { setShow } = useShow();
   const { onlineUsers } = useWebSocket();
   const online = onlineUsers.includes(chat.userId ?? "");
+  const member = chat.member.find((m) => m.userId === user?.id);
 
   return (
     <div className={cn("border-b border-border/40 p-3", className)}>
@@ -65,6 +69,14 @@ export const ChatHeader = ({ chat, className }: Props) => {
           </Button>
           {chat.isGroup && (
             <>
+              {member && member.haveAccess && (
+                <FormEditGroup
+                  id={chat.id}
+                  name={chat.name}
+                  image={chat.image}
+                  desc={chat.desc}
+                />
+              )}
               <CopyButton code={chat.invitedCode} />
               <Button
                 onClick={setShow}

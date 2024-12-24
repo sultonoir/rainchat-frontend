@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { stringToFile } from "@/lib/stringToFile";
 import { ImageCropper } from "@/components/ui/image-cropper";
+import { cn } from "@/lib/utils";
 
 export type FileWithPreview = FileWithPath & {
   preview: string;
@@ -15,19 +16,25 @@ const accept = {
   "image/*": [],
 };
 
-interface FieldImageProps {
+interface FieldImageProps extends React.HTMLAttributes<HTMLElement> {
   images: File[];
   setImages: (values: File[]) => void;
+  placeholder?: string;
 }
 
-export default function FieldImage({ setImages, images }: FieldImageProps) {
+export default function FieldImage({
+  setImages,
+  images,
+  className,
+  placeholder = "Drag 'n' drop some images here, or click to select images",
+}: FieldImageProps) {
   const [selectedFile, setSelectedFile] =
     React.useState<FileWithPreview | null>(null);
   const [isDialogOpen, setDialogOpen] = React.useState(false);
 
   const handleCropComplete = (croppedImageUrl: string) => {
     const file = stringToFile(croppedImageUrl, "");
-    setImages([file])
+    setImages([file]);
   };
 
   const onDrop = React.useCallback(
@@ -73,9 +80,14 @@ export default function FieldImage({ setImages, images }: FieldImageProps) {
       ) : (
         <div
           {...getRootProps()}
-          className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-            isDragActive ? "border-primary bg-primary/10" : "border-border"
-          }`}
+          className={cn(
+            "cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+            className,
+            {
+              "border-primary bg-primary/10": isDragActive,
+              "border-border": !isDragActive,
+            },
+          )}
         >
           <Input
             type="file"
@@ -85,9 +97,7 @@ export default function FieldImage({ setImages, images }: FieldImageProps) {
           />
           <Upload className="mx-auto h-12 w-12" />
           <p className="mt-2 text-sm">
-            {isDragActive
-              ? "Drop the images here ..."
-              : "Drag 'n' drop some images here, or click to select images"}
+            {isDragActive ? "Drop the images here ..." : placeholder}
           </p>
         </div>
       )}

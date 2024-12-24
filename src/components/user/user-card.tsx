@@ -10,6 +10,7 @@ import { useWebSocket } from "@/provider/socket-provider";
 import { cn } from "@/lib/utils";
 import { FormEditUser } from "../form/user/form-edit-user";
 import { FormSendDm } from "../form/send-dm/form-send-dm";
+import { LinkifyUrl } from "../ui/linkify";
 
 interface UserCardProps extends React.HtmlHTMLAttributes<HTMLElement> {
   userId: string;
@@ -74,9 +75,12 @@ export default function UserCard({ userId, className, name }: UserCardProps) {
               </div>
               {isMe && <FormEditUser />}
             </div>
+            <LinkifyUrl
+              className="text-xs text-muted-foreground"
+              message={data?.status ?? ""}
+            />
           </div>
         </div>
-        <p className="text-wrap text-sm text-zinc-500">{data?.status}</p>
         {!isMe && <FormSendDm userId={userId} name={name ?? ""} />}
       </div>
     </div>

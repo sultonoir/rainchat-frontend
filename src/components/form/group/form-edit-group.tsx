@@ -29,42 +29,46 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ky from "ky";
 import FieldImage from "../group/field-image";
-import { FieldBanner } from "./field-banner";
-import { useSession } from "@/provider/session-provider";
-import { User } from "@/types";
+import { Chatlist, ChatWithMember, Group } from "@/types";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  images: z.array(z.instanceof(File)),
-  baner: z.array(z.instanceof(File)),
-  status: z.string(),
+  image: z.array(z.instanceof(File)),
+  desc: z.string().optional(),
 });
 
-export function FormEditUser() {
-  const { user } = useSession();
+interface Props {
+  id: string;
+  name: string;
+  image: string;
+  desc?: string;
+}
+
+export function FormEditGroup({ name, image, desc, id }: Props) {
   const { startUpload } = useUploadThing("media");
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: user?.name ?? "",
-      images: [],
-      baner: [],
-      status: "",
+      name,
+      image: [],
+      desc,
     },
   });
 
   const ctx = useQueryClient();
-
+  const router = useRouter();
   const { mutate, isPending } = useMutation({
     mutationKey: ["update-user"],
     mutationFn: async (data: {
       name: string;
       image?: string;
       baner?: string;
-      status?: string;
-    }) => ky.patch("/v1/user/", { json: data }).json<User>(),
+      desc?: string;
+    }) => ky.patch(`/v1/group/${id}`, { json: data }).json<Group>(),
     onError: async (error) => {
       const message = await getGlobalError(error);
       toast.error(message);
@@ -73,16 +77,36 @@ export function FormEditUser() {
       toast.success("Profile updated successfully");
       form.reset();
       setOpen(false);
-      ctx.setQueryData<User>(["profile", data.id], (oldData) => {
+      ctx.setQueryData<Chatlist[]>(["chatlist"], (oldData) => {
         if (!oldData) {
-          return data;
+          return [];
+        }
+
+        const exist = oldData.some((o) => o.id === data.id);
+
+        return exist
+          ? oldData.map((item) =>
+              item.id === data.id
+                ? { ...item, name: data.name, image: data.image }
+                : item,
+            )
+          : [...oldData];
+      });
+
+      ctx.setQueryData<ChatWithMember>([id], (oldData) => {
+        if (!oldData) {
+          return;
         }
 
         return {
           ...oldData,
-          ...data,
+          name: data.name,
+          image: data.image,
+          desc: data.desc,
         };
       });
+
+      router.refresh();
     },
   });
 
@@ -99,25 +123,23 @@ export function FormEditUser() {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     const image =
-      data.images.length > 0 ? await uploadFiles(data.images) : undefined;
-    const baner =
-      data.baner.length > 0 ? await uploadFiles(data.baner) : undefined;
+      data.image.length > 0 ? await uploadFiles(data.image) : undefined;
 
-    const status = data.status !== "" ? data.status : undefined;
+    const desc = data.desc !== "" ? data.desc : undefined;
 
-    mutate({ name: data.name, image, baner, status });
+    mutate({ name: data.name, image, desc });
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-7">
+        <Button variant="ghost" size="icon" className="rounded-full">
           <Edit2 size={16} />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>Edit Group</DialogTitle>
           <DialogDescription className="sr-only">
             Update your profile details.
           </DialogDescription>
@@ -126,31 +148,26 @@ export function FormEditUser() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="baner"
+              name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Baner</FormLabel>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
-                    <FieldBanner
-                      setImages={field.onChange}
-                      images={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Avatar</FormLabel>
-                  <FormControl>
-                    <FieldImage
-                      setImages={field.onChange}
-                      images={field.value}
-                    />
+                    <div className="flex items-center justify-center gap-5">
+                      <Image
+                        src={image === "" ? "/avatar.png" : image}
+                        alt="image-group"
+                        width={144}
+                        height={144}
+                        className="flex-none rounded-full"
+                      />
+                      <FieldImage
+                        setImages={field.onChange}
+                        images={field.value}
+                        className="flex size-36 flex-col items-center justify-center rounded-full p-2"
+                        placeholder="Upload"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -171,12 +188,12 @@ export function FormEditUser() {
             />
             <FormField
               control={form.control}
-              name="status"
+              name="desc"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Desc</FormLabel>
                   <FormControl>
-                    <Input placeholder="status" {...field} />
+                    <Input placeholder="desc" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -43,7 +43,7 @@ export function MemberCard({ isMobile, member }: Props) {
         <DrawerTrigger asChild>
           <Button variant="ghost" className="h-fit w-full justify-start p-2">
             <UserAvatar online={online} src={member.user.image} />
-            <div className="flex flex-col">
+            <div className="flex flex-col items-start justify-start">
               <h3>{member.name ?? member.user.username}</h3>
               <p className="text-xs text-muted-foreground">
                 {member.user.status}
@@ -81,7 +81,7 @@ export function MemberCard({ isMobile, member }: Props) {
       <PopoverTrigger asChild>
         <Button variant="ghost" className="h-fit w-full justify-start p-2">
           <UserAvatar online={online} src={member.user.image} />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-start justify-start">
             <h3>{member.name ?? member.user.username}</h3>
             <p className="text-xs text-muted-foreground">
               {member.user.status}
