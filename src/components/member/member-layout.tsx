@@ -63,11 +63,11 @@ export const MemberLayout = ({ members, isGroup }: Props) => {
         animate={open ? "open" : "closed"}
         exit="closed"
         variants={sidebarVariants}
-        className={cn("border-border/50 lg:border-l", {
+        className={cn("h-full overflow-x-hidden border-border/50 lg:border-l", {
           "absolute right-0 z-10 bg-secondary lg:relative": isMobile,
         })}
       >
-        <div className="flex h-[calc(100dvh-90px)] w-full flex-col gap-2 overflow-y-auto p-3 lg:h-full lg:flex-1">
+        <div className="flex size-full flex-col gap-2 overflow-y-auto overflow-x-hidden p-3 lg:h-full lg:flex-1">
           <div className="flex flex-col gap-1">
             <p className="text-muted-foreground">Online</p>
             {onlineMember.map((m) => (
