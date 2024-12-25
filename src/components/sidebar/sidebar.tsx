@@ -3,7 +3,6 @@ import { FormLogout } from "../form/logout/form-logout";
 import { UserDropdown } from "../user/user-dropdown";
 import { FormCreatGroup } from "../form/group/form-create-group";
 import { ChatList } from "../chat/chat-list";
-import { SidebarTrigger } from "./sidebar-trigger";
 import Link from "next/link";
 
 export function Sidebar() {
@@ -16,7 +15,6 @@ export function Sidebar() {
         </Link>
         <div className="flex items-center gap-2">
           <FormCreatGroup />
-          <SidebarTrigger />
         </div>
       </div>
       <ChatList />

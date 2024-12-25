@@ -1,7 +1,7 @@
 import React from "react";
-import { ChatInput } from "./chat-input";
 import useMessage from "@/hooks/use-message";
 import { MessageReplyContent } from "../message/message-reply-content";
+import { FormSendMessage } from "../form/send-message/form-send-message";
 
 interface Props {
   id: string;
@@ -20,7 +20,7 @@ export const ChatFooter = ({ id, close }: Props) => {
           isClosed={true}
         />
       )}
-      <ChatInput id={id} close={close} />
+      <FormSendMessage close={close} id={id} />
     </div>
   );
 };
