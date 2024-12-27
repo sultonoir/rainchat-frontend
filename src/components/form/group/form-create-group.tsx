@@ -45,7 +45,7 @@ const FormSchema = z.object({
 });
 
 export function FormCreatGroup() {
-  const {socket} = useWebSocket()
+  const { socket } = useWebSocket();
   const { startUpload } = useUploadThing("media");
   const [open, setOpen] = React.useState(false);
 
@@ -85,11 +85,13 @@ export function FormCreatGroup() {
 
         return exist
           ? oldData.map((item) =>
-              item.id === data.id ? { ...item, ...data } : item,
+              item.id === data.id
+                ? { ...item, ...data, lastMessage: "Created group" }
+                : item,
             )
           : [data, ...oldData];
       });
-      socket?.emit('join group' , data.id)
+      socket?.emit("join group", data.id);
     },
   });
 

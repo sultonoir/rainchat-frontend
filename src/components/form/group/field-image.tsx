@@ -32,8 +32,8 @@ export default function FieldImage({
     React.useState<FileWithPreview | null>(null);
   const [isDialogOpen, setDialogOpen] = React.useState(false);
 
-  const handleCropComplete = (croppedImageUrl: string) => {
-    const file = stringToFile(croppedImageUrl, "");
+  const handleCropComplete = (croppedImageUrl: string, name: string) => {
+    const file = stringToFile(croppedImageUrl, name);
     setImages([file]);
   };
 

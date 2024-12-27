@@ -56,7 +56,7 @@ export default function UserCard({ userId, className, name }: UserCardProps) {
           alt={data?.name ?? "image profile"}
           src={data?.baner && data.baner !== "" ? data.baner : "/banner.webp"}
           fill
-          sizes="300px"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="size-full object-cover"
         />
       </div>

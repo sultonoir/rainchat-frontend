@@ -54,23 +54,32 @@ export function UserJoinChat({ chat }: { chat: ChatWithMember }) {
   };
   return (
     <Card className="w-full max-w-sm">
-      <CardHeader className="items-center">
+      <CardHeader className="sr-only">
         <CardTitle>{chat.name}</CardTitle>
         <CardDescription>{chat.desc}</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center space-y-8">
+      <CardContent className="flex flex-col items-center justify-center space-y-5 p-4">
         <Image
           src={chat.image}
           alt={chat.name}
-          width={200}
-          height={200}
+          width={60}
+          height={60}
           priority
           className="aspect-square rounded-full object-cover ring-2 ring-white"
         />
-        <div className="text-muted-foreground">
-          {chat.member.length} Members
+        <div className="flex flex-col items-center">
+          <h3 className="text-2xl font-semibold leading-none">{chat.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {chat.member.length} Members
+          </p>
         </div>
-        <Button onClick={handleSubmit} disabled={isPending} loading={isPending}>
+
+        <Button
+          onClick={handleSubmit}
+          disabled={isPending}
+          loading={isPending}
+          className="w-full"
+        >
           Join chat
         </Button>
       </CardContent>
